@@ -1,9 +1,11 @@
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
+dotenv.config(); 
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(process.env.ATLS_URL);
+    await mongoose.connect(process.env.ATLAS_URL);
     console.log("Connected to MongoDB");
   } catch (err) {
     console.error("Connection error:", err);
