@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const venueSchema = new mongoose.Schema({
-    adminId: {
+    ownerId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: [true, "Admin ID is required"],

@@ -12,7 +12,7 @@ const createVenue = async (req, res) => {
         features = req.body.features,
         description = req.body.description,
         images = req.body.images,
-        token = req.headers.autherization,
+        token = req.headers.authorization,
         availability = req.body.availability;
 
     if (!token) {
@@ -23,10 +23,10 @@ const createVenue = async (req, res) => {
         signature: process.env.REFRESH_TOKEN_USER_SIGNATURE
     });
 
-    const adminId = decoded._id;
+    const ownerId = decoded._id;
     const userRole = decoded.role;
 
-    if (!adminId || userRole.toLowerCase() !== "admin") {
+    if (!ownerId || userRole.toLowerCase() === "user") {
         return res.status(401).json({ success: false, error: "You are not autherized 2" });
     }
 
@@ -53,7 +53,7 @@ const createVenue = async (req, res) => {
     }
 
     Venue.create({
-        adminId,
+        ownerId,
         categoryId,
         name,
         location,
@@ -90,7 +90,7 @@ const getAllVenues = async (req, res) => {
 
 // Get venues by admin ID
 const getVenuesByAdmin = async (req, res) => {
-    const token = req.headers.autherization;
+    const token = req.headers.authorization;
 
     if (!token) {
         return res.status(401).json({ success: false, error: "You are not autherized" });
@@ -99,14 +99,14 @@ const getVenuesByAdmin = async (req, res) => {
         token: token,
         signature: process.env.REFRESH_TOKEN_USER_SIGNATURE
     });
-    const adminId = decoded._id;
+    const ownerId = decoded._id;
     const userRole = decoded.role;
 
-    if (!adminId || userRole.toLowerCase() !== "admin") {
+    if (!ownerId || userRole.toLowerCase() === "user") {
         return res.status(401).json({ success: false, error: "You are not autherized" });
     }
 
-    Venue.find({ adminId: adminId }).then(
+    Venue.find({ ownerId: ownerId }).then(
         (venues) => {
             if (venues && venues.length !== 0) {
                 res.status(200).json({ success: true, venues })
@@ -147,7 +147,7 @@ const updateVenue = async (req, res) => {
         description = req.body.description,
         images = req.body.images,
         availability = req.body.availability,
-        token = req.headers.autherization;
+        token = req.headers.authorization;
 
     if (!token) {
         return res.status(401).json({ success: false, error: "You are not autherized" });
@@ -156,10 +156,10 @@ const updateVenue = async (req, res) => {
         token: token,
         signature: process.env.REFRESH_TOKEN_USER_SIGNATURE
     });
-    const adminId = decoded._id;
+    const ownerId = decoded._id;
     const userRole = decoded.role;
 
-    if (!adminId || userRole.toLowerCase() !== "admin") {
+    if (!ownerId || userRole.toLowerCase() === "user") {
         return res.status(401).json({ success: false, error: "You are not autherized" });
     }
     if (!venueId) {
@@ -187,7 +187,7 @@ const updateVenue = async (req, res) => {
         }
     });
 
-    Venue.updateOne({ _id: venueId, adminId: adminId }, newVenue).then((result) => {
+    Venue.updateOne({ _id: venueId, ownerId: ownerId }, newVenue).then((result) => {
         if (result.matchedCount === 0) {
             return res.status(404).json({ success: false, error: "Venue not found or you are not autherized to update this venue" });
         }
@@ -209,7 +209,7 @@ const updateVenue = async (req, res) => {
 // Delete a venue
 const deleteVenue = async (req, res) => {
     const venueId = req.params.id,
-        token = req.headers.autherization;
+        token = req.headers.authorization;
     if (!token) {
         return res.status(401).json({ success: false, error: "You are not autherized" });
     }
@@ -217,16 +217,16 @@ const deleteVenue = async (req, res) => {
         token: token,
         signature: process.env.REFRESH_TOKEN_USER_SIGNATURE
     });
-    const adminId = decoded._id;
+    const ownerId = decoded._id;
     const userRole = decoded.role;
 
-    if (!adminId || userRole.toLowerCase() !== "admin") {
+    if (!ownerId || userRole.toLowerCase() === "user") {
         return res.status(401).json({ success: false, error: "You are not autherized" });
     }
     if (!venueId) {
         return res.status(400).json({ success: false, error: "Venue ID is required" });
     }
-    Venue.deleteOne({ _id: venueId, adminId: adminId }).then((result) => {
+    Venue.deleteOne({ _id: venueId, ownerId: ownerId }).then((result) => {
         if (result.deletedCount === 0) {
             return res.status(404).json({ success: false, error: "Venue not found or you are not autherized to delete this venue" });
         }

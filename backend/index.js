@@ -6,6 +6,7 @@ import userRouter from "./routes/user.route.js";
 import { globalErrorHandling } from "./utils/response.js";
 import categoryPath from "./routes/categoryRoutes.js";
 import venueRouter from "./routes/venueRoutes.js";
+import venueBookingRouter from "./routes/venue.booking.routes.js";
 dotenv.config();
 
 const app = express();
@@ -16,6 +17,7 @@ await connectDB();
 
 app.use("/api/category", categoryPath);
 app.use('/api/venues', venueRouter);
+app.use('/api/venuebooking', venueBookingRouter);
 //----------------------------------------------------
 app.get("/", (req, res) => res.json({ message: "welcome to app" }));
 
