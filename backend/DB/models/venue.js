@@ -17,9 +17,14 @@ const venueSchema = new mongoose.Schema({
         trim: [true, "Name cannot be empty"],
     },
     location: {
-        type: String,
-        required: true,
-        trim: [true, "Location cannot be empty"],
+        x: {
+            type: Number,
+            required: [true, "Location X is required"],
+        },
+        y: {
+            type: Number,
+            required: [true, "Location Y is required"],
+        }
     },
     capacity: {
         type: Number,
