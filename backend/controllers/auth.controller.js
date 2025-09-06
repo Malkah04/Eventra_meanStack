@@ -2,7 +2,7 @@ import { providerEnum, UserModel } from "../DB/models/user.model.js";
 import * as DBService from "../DB/db.service.js";
 import { generateHash, compareHash } from "../utils/security/hash.security.js";
 import { sendTestEmail } from "../utils/email/sendTestEmail.js";
-import { generateToken , tokenTypeEnum ,verifyToken} from "../utils/security/token.security.js";
+import { generateToken, tokenTypeEnum, verifyToken } from "../utils/security/token.security.js";
 import { asyncHandler, successResponse } from "../utils/response.js";
 import { customAlphabet } from "nanoid";
 import { generateEncryption } from "../utils/security/encryption.security.js";
@@ -139,9 +139,9 @@ export const login = asyncHandler(async (req, res, next) => {
     res,
     message: "Login successful",
     data: {
-      user,          
-      accessToken,    
-      refreshToken,  
+      user,
+      accessToken,
+      refreshToken,
     },
   });
 });
@@ -167,13 +167,13 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     html: `<h1>Your reset code is: ${otp}</h1><p>It will expire in 2 minutes.</p>`,
   });
 
-  return successResponse({ res, message: "Reset code sent to email",data:{ user } });
+  return successResponse({ res, message: "Reset code sent to email", data: { user } });
 });
 //======================Reset Password========================
 export const resetPassword = asyncHandler(async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
 
-  
+
   const user = await UserModel.findOne({ email, provider: providerEnum.system });
   if (!user) return next(new Error("Invalid email", { cause: 404 }));
 
@@ -184,16 +184,16 @@ export const resetPassword = asyncHandler(async (req, res, next) => {
   const match = await compareHash({ plaintext: otp, hashValue: user.forgotCode });
   if (!match) return next(new Error("Invalid reset code", { cause: 400 }));
 
-  
+
   const hashNewPassword = await generateHash({ plaintext: newPassword });
 
- 
+
   user.password = hashNewPassword;
   user.forgotCode = undefined;
   user.confirmEmailOTPExpiresAt = undefined;
   await user.save();
 
-  return successResponse({ res, message: "Password reset successfully" ,data:{ user }});
+  return successResponse({ res, message: "Password reset successfully", data: { user } });
 });
 //------------------------------------------------
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {

@@ -5,7 +5,7 @@ import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import { globalErrorHandling } from "./utils/response.js";
 import categoryPath from "./routes/categoryRoutes.js";
-
+import venueRouter from "./routes/venueRoutes.js";
 dotenv.config();
 
 const app = express();
@@ -15,6 +15,7 @@ await connectDB();
 
 
 app.use("/api/category", categoryPath);
+app.use('/api/venues', venueRouter);
 //----------------------------------------------------
 app.get("/", (req, res) => res.json({ message: "welcome to app" }));
 
@@ -22,7 +23,10 @@ app.use("/auth", authRouter);
 app.use("/user", userRouter);
 
 // 404 fallback
-app.all("*", (req, res) => res.status(404).json({ message: "in-valid app" }));
+// app.all("*", (req, res) => res.status(404).json({ message: "in-valid app" }));
+app.use((req, res) => {
+  res.status(404).send("Not Found");
+});
 
 // Global error handler
 app.use(globalErrorHandling);
