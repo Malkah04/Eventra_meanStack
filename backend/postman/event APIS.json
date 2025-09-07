@@ -1,0 +1,89 @@
+{
+  "info": {
+    "_postman_id": "b3a77cc1-6b69-4674-98a0-4e6f4d70b010",
+    "name": "Event Studio - Events",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Create Event",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Tech Conference\",\n  \"description\": \"Annual technology event\",\n  \"ticketPrice\": 100,\n  \"date\": \"2025-10-01\",\n  \"time\": \"18:00\",\n  \"categoryId\": \"<PUT_CATEGORY_ID_HERE>\",\n  \"venueId\": \"<PUT_VENUE_ID_HERE>\",\n  \"organizerId\": \"<PUT_ORGANIZER_ID_HERE>\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/events",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["events"]
+        }
+      }
+    },
+    {
+      "name": "Get All Events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/events",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["events"]
+        }
+      }
+    },
+    {
+      "name": "Get Event by ID",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/events/:id",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["events", ":id"]
+        }
+      }
+    },
+    {
+      "name": "Update Event",
+      "request": {
+        "method": "PUT",
+        "header": [{ "key": "Content-Type", "value": "application/json" }],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Event Name\",\n  \"ticketPrice\": 150\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/events/:id",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["events", ":id"]
+        }
+      }
+    },
+    {
+      "name": "Delete Event",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/events/:id",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["events", ":id"]
+        }
+      }
+    }
+  ]
+}
