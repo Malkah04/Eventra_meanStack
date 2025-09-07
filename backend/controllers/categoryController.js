@@ -1,55 +1,57 @@
-import Category from "../DB/models/category.js"; 
+import * as DBService from "../DB/db.service.js";
+import { asyncHandler, successResponse } from "../utils/response.js";
+import { CategoryModel } from "../DB/models/category.js";
 
-// Create category
-export const createCategory = async (req, res) => {
-  try {
-    const category = new Category(req.body);
-    await category.save();
-    res.status(201).json(category);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+// ================= Create Category =================
+export const createCategory = asyncHandler(async (req, res, next) => {
+  const category = await DBService.create({
+    model: CategoryModel,
+    data: req.body,
+  });
+  return successResponse({ res, data: { category }, status: 201 });
+});
 
-// Get all categories
-export const getCategories = async (req, res) => {
-  try {
-    const categories = await Category.find();
-    res.json(categories);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+// ================= Get All Categories =================
+export const getCategories = asyncHandler(async (req, res) => {
+  const categories = await DBService.find({
+    model: CategoryModel,
+  });
+  return successResponse({ res, data: { categories } });
+});
 
-// Get by ID
-export const getCategoryById = async (req, res) => {
-  try {
-    const category = await Category.findById(req.params.id);
-    if (!category) return res.status(404).json({ error: "Category not found" });
-    res.json(category);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+// ================= Get Category By ID =================
+export const getCategoryById = asyncHandler(async (req, res, next) => {
+  const category = await DBService.findById({
+    model: CategoryModel,
+    id: req.params.id,
+  });
 
-// Update category
-export const updateCategory = async (req, res) => {
-  try {
-    const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!category) return res.status(404).json({ error: "Category not found" });
-    res.json(category);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+  return category
+    ? successResponse({ res, data: { category } })
+    : next(new Error("Category not found", { cause: 404 }));
+});
 
-// Delete category
-export const deleteCategory = async (req, res) => {
-  try {
-    const category = await Category.findByIdAndDelete(req.params.id);
-    if (!category) return res.status(404).json({ error: "Category not found" });
-    res.json({ message: "Category deleted" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+// ================= Update Category =================
+export const updateCategory = asyncHandler(async (req, res, next) => {
+  const category = await DBService.findOneAndUpdate({
+    model: CategoryModel,
+    filter: { _id: req.params.id },
+    data: { $set: req.body, $inc: { __v: 1 } },
+  });
+
+  return category
+    ? successResponse({ res, data: { category } })
+    : next(new Error("Category not found", { cause: 404 }));
+});
+
+// ================= Delete Category =================
+export const deleteCategory = asyncHandler(async (req, res, next) => {
+  const result = await DBService.deleteOne({
+    model: CategoryModel,
+    filter: { _id: req.params.id },
+  });
+
+  return result.deletedCount
+    ? successResponse({ res, data: { deletedCount: result.deletedCount } })
+    : next(new Error("Category not found", { cause: 404 }));
+});

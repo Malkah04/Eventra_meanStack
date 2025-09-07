@@ -28,4 +28,4 @@ const eventSchema = new mongoose.Schema({
     required: true }
 }, { timestamps: true });
 
-export default mongoose.model("Event", eventSchema);
+export const EventModel = mongoose.model("Event", eventSchema);

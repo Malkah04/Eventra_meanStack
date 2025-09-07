@@ -1,55 +1,69 @@
-import Event from "../DB/models/event.js";
+import * as DBService from "../DB/db.service.js";
+import { asyncHandler, successResponse } from "../utils/response.js";
+import { EventModel } from "../DB/models/event.js";
 
-// Create event
-export const createEvent = async (req, res) => {
-  try {
-    const event = new Event(req.body);
-    await event.save();
-    res.status(201).json(event);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+// ================= Create Event =================
+export const createEvent = asyncHandler(async (req, res, next) => {
+  const event = await DBService.create({
+    model: EventModel,
+    data: req.body,
+  });
 
-// Get all events
-export const getEvents = async (req, res) => {
-  try {
-    const events = await Event.find().populate("categoryId", "name").populate("venueId", "name").populate("organizerId", "name");
-    res.json(events);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+  return successResponse({ res, data: { event }, status: 201 });
+});
 
-// Get single event
-export const getEventById = async (req, res) => {
-  try {
-    const event = await Event.findById(req.params.id).populate("categoryId", "name").populate("venueId", "name").populate("organizerId", "name");
-    if (!event) return res.status(404).json({ error: "Event not found" });
-    res.json(event);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+// ================= Get All Events =================
+export const getEvents = asyncHandler(async (req, res) => {
+  const events = await DBService.find({
+    model: EventModel,
+    populate: [
+      { path: "categoryId", select: "name" },
+      { path: "venueId", select: "name" },
+      { path: "organizerId", select: "name" },
+    ],
+  });
 
-// Update event
-export const updateEvent = async (req, res) => {
-  try {
-    const event = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    if (!event) return res.status(404).json({ error: "Event not found" });
-    res.json(event);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-};
+  return successResponse({ res, data: { events } });
+});
 
-// Delete event
-export const deleteEvent = async (req, res) => {
-  try {
-    const event = await Event.findByIdAndDelete(req.params.id);
-    if (!event) return res.status(404).json({ error: "Event not found" });
-    res.json({ message: "Event deleted" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-};
+// ================= Get Event By ID =================
+export const getEventById = asyncHandler(async (req, res, next) => {
+  const event = await DBService.findById({
+    model: EventModel,
+    id: req.params.id,
+    populate: [
+      { path: "categoryId", select: "name" },
+      { path: "venueId", select: "name" },
+      { path: "organizerId", select: "name" },
+    ],
+  });
+
+  return event
+    ? successResponse({ res, data: { event } })
+    : next(new Error("Event not found", { cause: 404 }));
+});
+
+// ================= Update Event =================
+export const updateEvent = asyncHandler(async (req, res, next) => {
+  const event = await DBService.findOneAndUpdate({
+    model: EventModel,
+    filter: { _id: req.params.id },
+    data: { $set: req.body, $inc: { __v: 1 } },
+  });
+
+  return event
+    ? successResponse({ res, data: { event } })
+    : next(new Error("Event not found", { cause: 404 }));
+});
+
+// ================= Delete Event =================
+export const deleteEvent = asyncHandler(async (req, res, next) => {
+  const result = await DBService.deleteOne({
+    model: EventModel,
+    filter: { _id: req.params.id },
+  });
+
+  return result.deletedCount
+    ? successResponse({ res, data: { deletedCount: result.deletedCount } })
+    : next(new Error("Event not found", { cause: 404 }));
+});
