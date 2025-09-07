@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 export const genderEnum = { male: "male", female: "female", other: "other" };
-export const roleEnum = { user: "User", admin: "Admin" };
+export const roleEnum = { user: "User", admin: "Admin", organizer: "Organizer" };
 export const providerEnum = { system: "system", google: "google" };
 
 const userSchema = new mongoose.Schema(

@@ -1,30 +1,30 @@
 import joi from "joi";
 import { generalFields } from "../middleware/validation.middleware.js";
 
-export const eventValidation = {
+export const bookingValidation = {
   create: {
     body: joi.object({
-      name: joi.string().min(3).max(100).required(),
-      description: joi.string().max(1000),
-      ticketPrice: joi.number().min(0).required(),
+      organizerId: generalFields.id.required(),
+      venueId: generalFields.id.required(),
+      categoryId: generalFields.id.required(),
       date: joi.date().greater("now").required(),
       time: joi.string().required(),
-      categoryId: generalFields.id.required(),
-      venueId: generalFields.id.required(),
-      organizerId: generalFields.id.required(),
+      totalPrice: joi.number().min(0).required(),
+      details: joi.string().max(1000),
+      bannerImage: joi.string().uri(),
     }).required(),
   },
 
   update: {
     body: joi.object({
-      name: joi.string().min(3).max(100),
-      description: joi.string().max(1000),
-      ticketPrice: joi.number().min(0),
+      organizerId: generalFields.id,
+      venueId: generalFields.id,
+      categoryId: generalFields.id,
       date: joi.date().greater("now"),
       time: joi.string(),
-      categoryId: generalFields.id,
-      venueId: generalFields.id,
-      organizerId: generalFields.id,
+      totalPrice: joi.number().min(0),
+      details: joi.string().max(1000),
+      bannerImage: joi.string().uri(),
     }).min(1).required(),
     params: joi.object({ id: generalFields.id.required() }).required(),
   },

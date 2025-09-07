@@ -9,7 +9,7 @@ import { generateEncryption } from "../utils/security/encryption.security.js";
 
 // =================== Signup ====================
 export const signup = asyncHandler(async (req, res, next) => {
-  const { fullName, email, password, phone } = req.body;
+  const { fullName, email, password, phone, role } = req.body;
 
   if (await DBService.findOne({ model: UserModel, filter: { email } })) {
     return next(new Error("Email already exists", { cause: 409 }));
@@ -34,6 +34,7 @@ export const signup = asyncHandler(async (req, res, next) => {
         email,
         password: hashPassword,
         phone: encPhone,
+        role: role || undefined, // 👈 هنا لو مبعتش حاجة هيفضل default User من الـ schema
         confirmEmailOTP: hashOTP,
         confirmEmailOTPExpiresAt: Date.now() + 2 * 60 * 1000,
       },
@@ -48,7 +49,6 @@ export const signup = asyncHandler(async (req, res, next) => {
 
   return successResponse({ res, status: 201, data: { user } });
 });
-
 // =================== Confirm Email ====================
 export const confirmEmail = asyncHandler(async (req, res, next) => {
   const { email, otp } = req.body;

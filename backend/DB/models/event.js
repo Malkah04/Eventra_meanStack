@@ -1,31 +1,35 @@
 import mongoose from "mongoose";
 
-const eventSchema = new mongoose.Schema({
-  name: { 
-    type: String,
-    required: true },
-  description: String,
-  ticketPrice: {
-    type: Number,
-    required: true },
-  date: { 
-    type: Date, 
-    required: true },
-  time: {
-    type: String, 
-    required: true },
-  categoryId: { 
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Category", 
-    required: true },
-  venueId: { 
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "Venue", 
-    required: true },
-  organizerId: {
-    type: mongoose.Schema.Types.ObjectId, 
-    ref: "User", 
-    required: true }
-}, { timestamps: true });
+const eventSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true, trim: true },
+    description: { type: String, default: "" },
+    ticketPrice: { type: Number, required: true, min: [0, "Price must be positive"] },
+    date: { type: Date, required: true },
+    time: { type: String, required: true },
 
-export const EventModel = mongoose.model("Event", eventSchema);
+    categoryId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    venueId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Venue",
+      required: true,
+    },
+    organizerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  }
+);
+
+const Event = mongoose.models.Event || mongoose.model("Event", eventSchema);
+export default Event;
