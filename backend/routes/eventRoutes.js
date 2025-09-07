@@ -1,12 +1,51 @@
-import express from "express";
+import { Router } from "express";
+import * as eventController from "../controllers/eventController.js"; 
+import { authentication, authorization } from "../middleware/authentication.middleware.js";
+import { validation } from "../middleware/validation.middleware.js";
+import * as validators from "../validation/event.validation.js"; 
+import { roleEnum } from "../DB/models/user.model.js"; // لو هتستعملي رولز زي Admin
 
-import { createEvent, getEvents, getEventById, updateEvent, deleteEvent } from "../controllers/eventController.js";
-const router = express.Router();
+const router = Router();
 
-router.post("/", createEvent);
-router.get("/", getEvents);
-router.get("/:id", getEventById);
-router.put("/:id", updateEvent);
-router.delete("/:id", deleteEvent);
+// إنشاء حدث جديد (Admin فقط مثلاً)
+router.post(
+  "/",
+  authentication(),
+  authorization([roleEnum.admin]), 
+  validation(validators.createEvent),
+  eventController.createEvent
+);
+
+// الحصول على كل الأحداث (عام)
+router.get(
+  "/",
+  validation(validators.getEvents), 
+  eventController.getEvents
+);
+
+// الحصول على حدث معين بالـ id
+router.get(
+  "/:eventId",
+  validation(validators.getEventById),
+  eventController.getEventById
+);
+
+// تحديث حدث (Admin فقط مثلاً)
+router.patch(
+  "/:eventId",
+  authentication(),
+  authorization([roleEnum.admin]), 
+  validation(validators.updateEvent),
+  eventController.updateEvent
+);
+
+// حذف حدث (Admin فقط مثلاً)
+router.delete(
+  "/:eventId",
+  authentication(),
+  authorization([roleEnum.admin]), 
+  validation(validators.deleteEvent),
+  eventController.deleteEvent
+);
 
 export default router;
