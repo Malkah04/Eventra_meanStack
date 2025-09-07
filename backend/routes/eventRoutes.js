@@ -1,50 +1,42 @@
-import { Router } from "express";
-import * as eventController from "../controllers/eventController.js"; 
+import express from "express";
+import * as eventController from "../controllers/eventController.js";
 import { authentication, authorization } from "../middleware/authentication.middleware.js";
+import { roleEnum } from "../DB/models/user.model.js";
 import { validation } from "../middleware/validation.middleware.js";
-import * as validators from "../validation/event.validation.js"; 
-import { roleEnum } from "../DB/models/user.model.js"; // لو هتستعملي رولز زي Admin
+import { eventValidation } from "../validation/event.validation.js";
 
-const router = Router();
+const router = express.Router();
 
-// إنشاء حدث جديد (Admin فقط مثلاً)
+// Create event (Organizer فقط)
 router.post(
   "/",
   authentication(),
-  authorization([roleEnum.admin]), 
-  validation(validators.createEvent),
+  authorization([roleEnum.organizer]),
+  validation(eventValidation.create),
   eventController.createEvent
 );
 
-// الحصول على كل الأحداث (عام)
-router.get(
-  "/",
-  validation(validators.getEvents), 
-  eventController.getEvents
-);
+// Get all events (عام)
+router.get("/", eventController.getEvents);
 
-// الحصول على حدث معين بالـ id
-router.get(
-  "/:eventId",
-  validation(validators.getEventById),
-  eventController.getEventById
-);
+// Get single event (عام)
+router.get("/:id", validation(eventValidation.getById), eventController.getEventById);
 
-// تحديث حدث (Admin فقط مثلاً)
+// Update event (Organizer فقط + لازم يبقى هو اللي عمل الإيفنت)
 router.patch(
-  "/:eventId",
+  "/:id",
   authentication(),
-  authorization([roleEnum.admin]), 
-  validation(validators.updateEvent),
+  authorization([roleEnum.organizer]),
+  validation(eventValidation.update),
   eventController.updateEvent
 );
 
-// حذف حدث (Admin فقط مثلاً)
+// Delete event (Organizer بتاعه أو Admin)
 router.delete(
-  "/:eventId",
+  "/:id",
   authentication(),
-  authorization([roleEnum.admin]), 
-  validation(validators.deleteEvent),
+  authorization([roleEnum.organizer, roleEnum.admin]),
+  validation(eventValidation.delete),
   eventController.deleteEvent
 );
 

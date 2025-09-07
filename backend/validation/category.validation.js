@@ -1,9 +1,33 @@
-import Joi from "joi";
+import joi from "joi";
+import { generalFields } from "../middleware/validation.middleware.js";
 
-export const createCategoryValidation = Joi.object({
-  name: Joi.string().min(2).max(50).required(),
-});
+export const categoryValidation = {
+  create: {
+    body: joi.object({
+      name: joi.string().min(3).max(50).required(),
+      description: joi.string().max(500),
+    }).required(),
+  },
 
-export const updateCategoryValidation = Joi.object({
-  name: Joi.string().min(2).max(50),
-});
+  update: {
+    body: joi.object({
+      name: joi.string().min(3).max(50),
+      description: joi.string().max(500),
+    }).min(1).required(),
+    params: joi.object({
+      id: generalFields.id.required(),
+    }).required(),
+  },
+
+  getById: {
+    params: joi.object({
+      id: generalFields.id.required(),
+    }).required(),
+  },
+
+  delete: {
+    params: joi.object({
+      id: generalFields.id.required(),
+    }).required(),
+  },
+};

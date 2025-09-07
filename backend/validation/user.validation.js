@@ -1,41 +1,52 @@
-
-import joi from "joi";
+import Joi from "joi";
 import { generalFields } from "../middleware/validation.middleware.js";
+import { genderEnum } from "../DB/models/user.model.js";
 
-export const genderEnum = { male: "male", female: "female", other: "other" };
-
+// Schema لعرض بروفايل حد (shareProfile)
 export const shareProfile = {
-  params: joi.object().keys({ userId: generalFields.id.required() }).required(),
+  params: Joi.object({
+    userId: generalFields.id.required(),
+  }).required(),
 };
 
+// Schema لتحديث البروفايل الأساسي
 export const updateBasicProfile = {
-  body: joi
-    .object()
-    .keys({
-      firstName: generalFields.firstName,
-      lastName: generalFields.lastName,
-      age: generalFields.age,
-      phone: generalFields.phone,
-      gender: joi.string().valid(...Object.values(genderEnum)),
-    })
-    .required(),
+  params: Joi.object({
+    userId: generalFields.id.required(),
+  }).required(),
+  body: Joi.object({
+    firstName: Joi.string().min(2).max(20),
+    lastName: Joi.string().min(2).max(20),
+    phone: Joi.string().min(8).max(15),
+    gender: Joi.string().valid(...Object.values(genderEnum)),
+  }).min(1).required(),
 };
 
+// Schema لتجميد حساب (Freeze) - Admin فقط
 export const freezeAccount = {
-  params: joi.object().keys({ userId: generalFields.id.required() }).required(),
+  params: Joi.object({
+    userId: generalFields.id.required(),
+  }).required(),
 };
 
+// Schema لاسترجاع حساب (Restore) - Admin فقط
 export const restoreAccount = {
-  params: joi.object().keys({ userId: generalFields.id.required() }).required(),
+  params: Joi.object({
+    userId: generalFields.id.required(),
+  }).required(),
 };
 
+// Schema لحذف حساب نهائي (Hard Delete) - Admin فقط
+export const hardDeleteAccount = {
+  params: Joi.object({
+    userId: generalFields.id.required(),
+  }).required(),
+};
 
+// Schema لتحديث كلمة المرور
 export const updatePassword = {
-  body: joi
-    .object()
-    .keys({
-      oldPassword: generalFields.password.required(),
-      newPassword: generalFields.password.required(),
-    })
-    .required(),
+  body: Joi.object({
+    oldPassword: Joi.string().required(),
+    newPassword: Joi.string().min(6).required(),
+  }).required(),
 };

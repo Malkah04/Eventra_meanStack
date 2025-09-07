@@ -8,11 +8,18 @@ const categorySchema = new mongoose.Schema(
       unique: true,
       trim: true,
     },
-    description: String,
+    description: {
+      type: String,
+      default: "",
+    },
   },
-  { timestamps: true }
+  {
+    timestamps: true,
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true },
+  }
 );
 
-const Category = mongoose.model("Category", categorySchema);
-export const CategoryModel = mongoose.model("Category", categorySchema);
-
+const Category = mongoose.models.Category || mongoose.model("Category", categorySchema);
+Category.syncIndexes();
+export default Category;

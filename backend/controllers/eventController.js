@@ -1,69 +1,55 @@
-import * as DBService from "../DB/db.service.js";
 import { asyncHandler, successResponse } from "../utils/response.js";
-import { EventModel } from "../DB/models/event.js";
+import Event from "../DB/models/event.js";
+import { roleEnum } from "../DB/models/user.model.js";
 
-// ================= Create Event =================
-export const createEvent = asyncHandler(async (req, res, next) => {
-  const event = await DBService.create({
-    model: EventModel,
-    data: req.body,
-  });
-
-  return successResponse({ res, data: { event }, status: 201 });
+// =================== Create ====================
+export const createEvent = asyncHandler(async (req, res) => {
+  const event = await Event.create({ ...req.body, organizerId: req.user._id });
+  return successResponse({ res, status: 201, data: { event } });
 });
 
-// ================= Get All Events =================
+// =================== Get All ====================
 export const getEvents = asyncHandler(async (req, res) => {
-  const events = await DBService.find({
-    model: EventModel,
-    populate: [
-      { path: "categoryId", select: "name" },
-      { path: "venueId", select: "name" },
-      { path: "organizerId", select: "name" },
-    ],
-  });
-
+  const events = await Event.find()
+    .populate("categoryId", "name")
+    .populate("venueId", "name")
+    .populate("organizerId", "firstName lastName email");
   return successResponse({ res, data: { events } });
 });
 
-// ================= Get Event By ID =================
+// =================== Get By Id ====================
 export const getEventById = asyncHandler(async (req, res, next) => {
-  const event = await DBService.findById({
-    model: EventModel,
-    id: req.params.id,
-    populate: [
-      { path: "categoryId", select: "name" },
-      { path: "venueId", select: "name" },
-      { path: "organizerId", select: "name" },
-    ],
-  });
-
-  return event
-    ? successResponse({ res, data: { event } })
-    : next(new Error("Event not found", { cause: 404 }));
+  const event = await Event.findById(req.params.id)
+    .populate("categoryId", "name")
+    .populate("venueId", "name")
+    .populate("organizerId", "firstName lastName email");
+  if (!event) return next(new Error("Event not found", { cause: 404 }));
+  return successResponse({ res, data: { event } });
 });
 
-// ================= Update Event =================
+// =================== Update ====================
 export const updateEvent = asyncHandler(async (req, res, next) => {
-  const event = await DBService.findOneAndUpdate({
-    model: EventModel,
-    filter: { _id: req.params.id },
-    data: { $set: req.body, $inc: { __v: 1 } },
-  });
+  const event = await Event.findById(req.params.id);
+  if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  return event
-    ? successResponse({ res, data: { event } })
-    : next(new Error("Event not found", { cause: 404 }));
+  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
+    return next(new Error("Not authorized to update this event", { cause: 403 }));
+  }
+
+  Object.assign(event, req.body);
+  await event.save();
+  return successResponse({ res, data: { event } });
 });
 
-// ================= Delete Event =================
+// =================== Delete ====================
 export const deleteEvent = asyncHandler(async (req, res, next) => {
-  const result = await DBService.deleteOne({
-    model: EventModel,
-    filter: { _id: req.params.id },
-  });
+  const event = await Event.findById(req.params.id);
+  if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  return result.deletedCount
-    ? successResponse({ res, data: { deletedCount: result.deletedCount } })
-    : next(new Error("Event not found", { cause: 404 }));
+  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
+    return next(new Error("Not authorized to delete this event", { cause: 403 }));
+  }
+
+  await event.deleteOne();
+  return successResponse({ res, message: "Event deleted successfully" });
 });

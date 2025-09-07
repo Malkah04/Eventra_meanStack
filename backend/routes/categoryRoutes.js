@@ -1,51 +1,49 @@
-import { Router } from "express";
-import * as categoryController from "../controllers/categoryController.js";
+import express from "express";
+import {
+  createCategory,
+  getCategories,
+  getCategoryById,
+  updateCategory,
+  deleteCategory,
+} from "../controllers/categoryController.js";
 import { authentication, authorization } from "../middleware/authentication.middleware.js";
+import { roleEnum } from "../DB/models/user.model.js";
 import { validation } from "../middleware/validation.middleware.js";
-import * as validators from "../validation/category.validation.js";
-import { roleEnum } from "../DB/models/user.model.js"; // لو عندك رولز زي Admin
+import { categoryValidation } from "../validation/category.validation.js";
 
-const router = Router();
+const router = express.Router();
 
-// إنشاء كاتيجوري جديدة (Admin فقط مثلاً)
+//Create Category (Admin فقط)
 router.post(
   "/",
   authentication(),
   authorization([roleEnum.admin]),
-  validation(validators.createCategory),
-  categoryController.createCategory
+  validation(categoryValidation.create),
+  createCategory
 );
 
-// الحصول على كل الكاتيجوريز (عام)
-router.get(
-  "/",
-  validation(validators.getCategories),
-  categoryController.getCategories
-);
+// Get all categories (عام)
+router.get("/", getCategories);
 
-// الحصول على كاتيجوري واحدة بالـ id
-router.get(
-  "/:categoryId",
-  validation(validators.getCategoryById),
-  categoryController.getCategoryById
-);
+// Get single category (عام)
+router.get("/:id", validation(categoryValidation.getById), getCategoryById);
 
-// تحديث كاتيجوري (Admin فقط مثلاً)
+// Update category (Admin فقط)
 router.patch(
-  "/:categoryId",
+  "/:id",
   authentication(),
   authorization([roleEnum.admin]),
-  validation(validators.updateCategory),
-  categoryController.updateCategory
+  validation(categoryValidation.update),
+  updateCategory
 );
 
-// حذف كاتيجوري (Admin فقط مثلاً)
+//Delete category (Admin فقط)
 router.delete(
-  "/:categoryId",
+  "/:id",
   authentication(),
   authorization([roleEnum.admin]),
-  validation(validators.deleteCategory),
-  categoryController.deleteCategory
+  validation(categoryValidation.delete),
+  deleteCategory
 );
 
 export default router;
