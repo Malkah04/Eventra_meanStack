@@ -9,6 +9,7 @@ import categoryRouter from "./routes/categoryRoutes.js";
 import venueRouter from "./routes/venueRoutes.js";
 import bookingRouter from "./routes/venue.booking.routes.js";
 import eventRouter from "./routes/eventRoutes.js";
+import orgCartRouter from "./routes/orgCart.router.js";
 
 // Utils
 import { globalErrorHandling } from "./utils/response.js";
@@ -29,6 +30,7 @@ app.use("/api/categories", categoryRouter);
 app.use("/api/venues", venueRouter);
 app.use("/api/bookings", bookingRouter);
 app.use("/api/events", eventRouter);
+app.use("/api/orgCart", orgCartRouter);
 
 // Root Route
 app.get("/", (req, res) => res.json({ message: "Welcome to the app" }));
