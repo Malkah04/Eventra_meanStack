@@ -4,7 +4,7 @@ import { generalFields } from "../middleware/validation.middleware.js";
 export const venueValidation = {
   create: {
     body: joi.object({
-      ownerId: generalFields.id.required(),
+      // ownerId ❌ هنشيله لأننا بناخده من req.user
       categoryId: generalFields.id.required(),
       name: joi.string().min(3).max(100).required(),
       location: joi.object({
@@ -17,8 +17,8 @@ export const venueValidation = {
       description: joi.string().max(1000),
       images: joi.array().items(joi.string().uri()),
       availability: joi.object({
-        openTime: joi.string(),
-        closeTime: joi.string(),
+        openTime: joi.string().pattern(/^\d{2}:\d{2}$/), // HH:mm
+        closeTime: joi.string().pattern(/^\d{2}:\d{2}$/),
         days: joi.array().items(joi.string()),
       }),
     }).required(),
@@ -26,7 +26,7 @@ export const venueValidation = {
 
   update: {
     body: joi.object({
-      ownerId: generalFields.id,
+      // ownerId ❌ مش هيظهر هنا برضو
       categoryId: generalFields.id,
       name: joi.string().min(3).max(100),
       location: joi.object({
@@ -39,8 +39,8 @@ export const venueValidation = {
       description: joi.string().max(1000),
       images: joi.array().items(joi.string().uri()),
       availability: joi.object({
-        openTime: joi.string(),
-        closeTime: joi.string(),
+        openTime: joi.string().pattern(/^\d{2}:\d{2}$/),
+        closeTime: joi.string().pattern(/^\d{2}:\d{2}$/),
         days: joi.array().items(joi.string()),
       }),
     }).min(1).required(),

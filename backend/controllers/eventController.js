@@ -3,7 +3,21 @@ import Event from "../DB/models/event.js";
 import { roleEnum } from "../DB/models/user.model.js";
 
 // =================== Create ====================
-export const createEvent = asyncHandler(async (req, res) => {
+export const createEvent = asyncHandler(async (req, res, next) => {
+  // نتأكد إنه مش مكرر قبل الإنشاء
+  const existing = await Event.findOne({
+    name: req.body.name,
+    venueId: req.body.venueId,
+    date: req.body.date,
+  });
+  if (existing) {
+    return next(
+      new Error("This event already exists for this venue on this date", {
+        cause: 400,
+      })
+    );
+  }
+
   const event = await Event.create({ ...req.body, organizerId: req.user._id });
   return successResponse({ res, status: 201, data: { event } });
 });
@@ -32,7 +46,10 @@ export const updateEvent = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
+  if (
+    req.user.role === roleEnum.organizer &&
+    event.organizerId.toString() !== req.user._id.toString()
+  ) {
     return next(new Error("Not authorized to update this event", { cause: 403 }));
   }
 
@@ -46,7 +63,10 @@ export const deleteEvent = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
+  if (
+    req.user.role === roleEnum.organizer &&
+    event.organizerId.toString() !== req.user._id.toString()
+  ) {
     return next(new Error("Not authorized to delete this event", { cause: 403 }));
   }
 

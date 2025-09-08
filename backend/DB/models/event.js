@@ -31,5 +31,11 @@ const eventSchema = new mongoose.Schema(
   }
 );
 
+// منع تكرار نفس الـ event فى نفس المكان والتاريخ
+eventSchema.index(
+  { name: 1, venueId: 1, date: 1 },
+  { unique: true, collation: { locale: "en", strength: 2 } }
+);
+
 const Event = mongoose.models.Event || mongoose.model("Event", eventSchema);
 export default Event;
