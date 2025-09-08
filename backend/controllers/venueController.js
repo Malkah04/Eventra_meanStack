@@ -41,6 +41,9 @@ export const updateVenue = asyncHandler(async (req, res, next) => {
     return next(new Error("Not authorized to update this venue", { cause: 403 }));
   }
 
+  // نحذف ownerId لو اليوزر بعتو بالغلط
+  if ("ownerId" in req.body) delete req.body.ownerId;
+
   Object.assign(venue, req.body);
   await venue.save();
   return successResponse({ res, data: { venue } });
