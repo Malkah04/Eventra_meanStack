@@ -48,6 +48,7 @@ const addItemToCart = asyncHandler(async (req, res) => {
     lastPrice = checkEv.time * checkEv.ticketPrice;
   }
   let cart = await orgCart.findOne({ organizerId });
+  let totalPrice = 0;
   if (!cart) {
     cart = new orgCart({
       organizerId,
@@ -62,6 +63,7 @@ const addItemToCart = asyncHandler(async (req, res) => {
         },
       ],
     });
+    totalPrice = lastPrice;
   } else {
     const alreadyExists = cart.item.some(
       (it) =>
@@ -72,7 +74,6 @@ const addItemToCart = asyncHandler(async (req, res) => {
     if (alreadyExists) {
       return res.status(400).json({ message: "item already in cart" });
     }
-
     cart.item.push({
       eventId,
       venueId,
@@ -81,11 +82,13 @@ const addItemToCart = asyncHandler(async (req, res) => {
       startTime: start,
       endTime: end,
     });
+    totalPrice = cart.item.reduce((sum, it) => sum + (it.totalPrice || 0), 0);
   }
+
   await cart.save();
   return res
     .status(201)
-    .json({ message: "Item added to cart successfully", cart });
+    .json({ message: "Item added to cart successfully", cart, totalPrice });
 });
 
 const deleteCart = asyncHandler(async (req, res) => {

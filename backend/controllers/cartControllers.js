@@ -1,22 +1,21 @@
 import * as DBService from "../DB/db.service.js";
 import { asyncHandler, successResponse } from "../utils/response.js";
-import { CartModel } from "../DB/models/cart.js";
+import CartModel from "../DB/models/cart.js";
 
 //  Add ticket to the cart
 export const addToCart = asyncHandler(async (req, res, next) => {
   const { userID, eventID, quantity, price } = req.body;
 
   // Find active cart for user
-  let cart = await DBService.findOne({
-    model: CartModel,
-    filter: { userID, status: "active" },
-  });
+  let cart = await CartModel.findOne({ userID, status: "active" });
 
   if (!cart) {
     // If there is no active cart, create a new one
-    cart = await DBService.create({
-      model: CartModel,
-      data: { userID, items: [] },
+    cart = new CartModel({
+      userID,
+      status: "active",
+      items: [],
+      totalAmount: 0,
     });
   }
 
@@ -26,8 +25,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   );
 
   if (existingItem) {
-    existingItem.quantity += quantity;
-    existingItem.subtotal = existingItem.quantity * existingItem.price;
+    return res.status(400).json({ message: "item already in the cart" });
   } else {
     cart.items.push({
       eventID,
@@ -48,17 +46,12 @@ export const addToCart = asyncHandler(async (req, res, next) => {
 export const removeFromCart = asyncHandler(async (req, res, next) => {
   const { userID, eventID } = req.body;
 
-  const cart = await DBService.findOne({
-    model: CartModel,
-    filter: { userID, status: "active" },
-  });
+  const cart = await CartModel.findOne({ userID, status: "active" });
 
   if (!cart) return next(new Error("Cart not found", { cause: 404 }));
 
   // Remove the ticket
-  cart.items = cart.items.filter(
-    (item) => item.eventID.toString() !== eventID
-  );
+  cart.items = cart.items.filter((item) => item.eventID.toString() !== eventID);
 
   // Update total
   cart.totalAmount = cart.items.reduce((acc, item) => acc + item.subtotal, 0);

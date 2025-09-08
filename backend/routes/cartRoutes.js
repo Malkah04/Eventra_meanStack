@@ -1,5 +1,5 @@
 import { Router } from "express";
-import * as cartController from "../controllers/cartController.js";
+import * as cartController from "../controllers/cartControllers.js";
 import { authentication } from "../middleware/authentication.middleware.js";
 import { validation } from "../middleware/validation.middleware.js";
 import * as validators from "../validation/cart.validation.js";
@@ -15,7 +15,7 @@ router.post(
 );
 
 //  Remove ticket from cart
-router.post(
+router.delete(
   "/remove",
   authentication(),
   validation(validators.removeFromCart),
@@ -23,7 +23,7 @@ router.post(
 );
 
 //  Empty cart
-router.post(
+router.delete(
   "/empty",
   authentication(),
   validation(validators.emptyCart),
