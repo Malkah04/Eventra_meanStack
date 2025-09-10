@@ -1,6 +1,7 @@
 import express from "express";
 import dotenv from "dotenv";
 import connectDB from "./DB/db.connect.js";
+import cors from "cors";
 
 // Routers
 import authRouter from "./routes/auth.route.js";
@@ -21,6 +22,7 @@ dotenv.config();
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 // Connect to Database
 await connectDB();
