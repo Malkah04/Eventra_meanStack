@@ -1,6 +1,12 @@
+<h1>Cart</h1>
+ <button (click)="deleteCart()" >empty the cart</button>
 <ul>
   <li *ngFor="let c of cart">
-    {{c.startTime}}
+    {{c.startTime}}pm -{{c.endTime}}pm
+    {{c.venueId}}
+    <p>${{c.totalPrice}}</p>
+    <button (click)="deleteItem(c.eventId ,c.venueId)" > delete </button>
+
   </li>
 </ul>
 
