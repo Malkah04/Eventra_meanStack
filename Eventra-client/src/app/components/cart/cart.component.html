@@ -1,0 +1,18 @@
+<div class="cart-container" *ngIf="cart && cart.items.length > 0; else emptyCartTemplate">
+  <h2>Your Cart</h2>
+  <ul>
+    <li *ngFor="let item of cart.items">
+      <span>{{ item.eventID.name }} ({{ item.quantity }} x ${{ item.price }})</span>
+      <button (click)="removeItem(item.eventID._id)">Remove</button>
+    </li>
+  </ul>
+
+  <h3>Total: ${{ cart.totalAmount }}</h3>
+
+  <button (click)="emptyCart()">Empty Cart</button>
+  <button (click)="checkout()">Proceed to Payment</button>
+</div>
+
+<ng-template #emptyCartTemplate>
+  <p>Your cart is empty.</p>
+</ng-template>
