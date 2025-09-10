@@ -1,14 +1,16 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { OrganizerCartComponent } from './components/organizer-cart/organizer-cart.component';
 import { HttpClientModule } from '@angular/common/http';
+import { EventComponent } from './components/event/event.component';
+import { CategoryComponent } from './components/category/category.component';
+import { FormsModule } from '@angular/forms';
 
 @NgModule({
-  declarations: [AppComponent, OrganizerCartComponent],
-  imports: [BrowserModule, AppRoutingModule, HttpClientModule],
+  declarations: [AppComponent, OrganizerCartComponent, EventComponent, CategoryComponent],
+  imports: [BrowserModule,FormsModule, AppRoutingModule, HttpClientModule],
   providers: [],
   bootstrap: [AppComponent],
 })
