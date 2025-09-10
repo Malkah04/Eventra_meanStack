@@ -31,20 +31,25 @@ export class OrganizerCartComponent {
       this.totalPrice = data.lastPrice;
     });
   }
-  deleteItem(orgId: string, eventId?: string, venueId?: string) {
-    const item = { organizerId: orgId, eventId: eventId, venueId: venueId };
-    this.orgCartService.deleteItemFromCart(item).subscribe((data) => {
-      this.cart = this.cart.filter(
-        (e) =>
-          !(
-            e.organizerId === orgId &&
-            (e.eventId === eventId || e.venueId === venueId)
-          )
-      );
+  deleteItem(eventId?: string, venueId?: string) {
+    const item = {
+      organizerId: this.orgId,
+      eventId,
+      venueId,
+    };
+
+    this.orgCartService.deleteItemFromCart(item).subscribe(() => {
+      this.cart = this.cart.filter((e) => {
+        if (eventId) {
+          return !(e.organizerId === this.orgId && e.eventId === eventId);
+        }
+        return !(e.organizerId === this.orgId && e.venueId === venueId);
+      });
     });
   }
-  deleteCart(orgId: string) {
-    this.orgCartService.deleteCart(orgId).subscribe((data) => {
+
+  deleteCart() {
+    this.orgCartService.deleteCart(this.orgId).subscribe((data) => {
       this.cart = [];
     });
   }
