@@ -17,7 +17,12 @@ const getAllItemByOrg = asyncHandler(async (req, res) => {
   if (!getCart || !getCart.item || getCart.item.length === 0) {
     return res.status(400).json({ message: "no item in cart" });
   }
-  res.status(200).json(getCart.item);
+  const lastPrice = getCart.item.reduce(
+    (sum, it) => sum + (it.totalPrice || 0),
+    0
+  );
+
+  res.status(200).json({ item: getCart.item, lastPrice });
 });
 
 const calcPrice = (start, end, pricePerHour) => {
