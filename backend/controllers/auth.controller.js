@@ -6,6 +6,9 @@ import { generateToken, tokenTypeEnum, verifyToken } from "../utils/security/tok
 import { asyncHandler, successResponse } from "../utils/response.js";
 import { customAlphabet } from "nanoid";
 import { generateEncryption } from "../utils/security/encryption.security.js";
+import { OAuth2Client } from "google-auth-library";
+import { verifyGoogleToken } from '../utils/security/google.security.js';
+
 
 // =================== Signup ====================
 export const signup = asyncHandler(async (req, res, next) => {
@@ -22,6 +25,7 @@ export const signup = asyncHandler(async (req, res, next) => {
   const hashPassword = await generateHash({ plaintext: password });
   const encPhone = phone ? await generateEncryption({ plaintext: phone }) : undefined;
 
+  // OTP
   const otp = customAlphabet("0123456789", 4)();
   const hashOTP = await generateHash({ plaintext: otp });
 
@@ -34,9 +38,9 @@ export const signup = asyncHandler(async (req, res, next) => {
         email,
         password: hashPassword,
         phone: encPhone,
-        role: role || undefined, // 👈 هنا لو مبعتش حاجة هيفضل default User من الـ schema
+        role: role || undefined,
         confirmEmailOTP: hashOTP,
-        confirmEmailOTPExpiresAt: Date.now() + 2 * 60 * 1000,
+        confirmEmailOTPExpiresAt: new Date(Date.now() + 2 * 60 * 1000), // ✅ Date object
       },
     ],
   });
@@ -49,6 +53,8 @@ export const signup = asyncHandler(async (req, res, next) => {
 
   return successResponse({ res, status: 201, data: { user } });
 });
+
+
 // =================== Confirm Email ====================
 export const confirmEmail = asyncHandler(async (req, res, next) => {
   const { email, otp } = req.body;
@@ -56,17 +62,20 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
   const user = await UserModel.findOne({ email });
   if (!user) return next(new Error("Invalid account or OTP expired", { cause: 404 }));
 
-  if (!user.confirmEmailOTP || Date.now() > user.confirmEmailOTPExpiresAt) {
+  // تحقق من وجود الـ OTP وصلاحيته
+  if (!user.confirmEmailOTP || Date.now() > user.confirmEmailOTPExpiresAt.getTime()) {
     return next(new Error("OTP expired", { cause: 400 }));
   }
 
+  // تحقق من الكود
   const match = await compareHash({ plaintext: otp, hashValue: user.confirmEmailOTP });
   if (!match) return next(new Error("Invalid OTP", { cause: 400 }));
 
+  // تحديث بيانات المستخدم
   const updatedUser = await UserModel.findOneAndUpdate(
     { email },
     {
-      $set: { confirmEmailAt: Date.now() },
+      $set: { confirmEmailAt: new Date() }, // هنا خليتها Date object
       $unset: { confirmEmailOTP: 1, confirmEmailOTPExpiresAt: 1 },
     },
     { new: true }
@@ -75,16 +84,22 @@ export const confirmEmail = asyncHandler(async (req, res, next) => {
   return successResponse({ res, message: "Email confirmed successfully", data: { user: updatedUser } });
 });
 
+
 // =================== Resend Confirm Email OTP ====================
 export const resendConfirmEmailOTP = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
 
-  const user = await UserModel.findOne({ email, provider: providerEnum.system, confirmEmailAt: { $exists: false } });
+  const user = await UserModel.findOne({
+    email,
+    provider: providerEnum.system,
+    confirmEmailAt: { $exists: false },
+  });
   if (!user) return next(new Error("Invalid account or already confirmed", { cause: 404 }));
 
   const otp = customAlphabet("0123456789", 4)();
+
   user.confirmEmailOTP = await generateHash({ plaintext: otp });
-  user.confirmEmailOTPExpiresAt = Date.now() + 2 * 60 * 1000;
+  user.confirmEmailOTPExpiresAt = new Date(Date.now() + 2 * 60 * 1000); // صلاحية دقيقتين
   user.confirmEmailOTPRetries = (user.confirmEmailOTPRetries || 0) + 1;
 
   await user.save();
@@ -95,7 +110,7 @@ export const resendConfirmEmailOTP = asyncHandler(async (req, res, next) => {
     html: `<h1>Your new OTP is: ${otp}</h1><p>It will expire in 2 minutes.</p>`,
   });
 
-  return successResponse({ res, message: "OTP resent successfully", data: { user } });
+  return successResponse({ res, message: "OTP resent successfully" });
 });
 
 // =================== Login ====================
@@ -130,7 +145,6 @@ export const login = asyncHandler(async (req, res, next) => {
     options: { expiresIn: process.env.REFRESH_EXPIRES_IN || "7d" },
   });
 
-  // خزّنه فى الداتابيز علشان الـ logout يقدر يمسحه
   await UserModel.findByIdAndUpdate(user._id, {
     $push: { refreshTokens: { token: refreshToken } },
   });
@@ -138,15 +152,49 @@ export const login = asyncHandler(async (req, res, next) => {
   return successResponse({
     res,
     message: "Login successful",
-    data: {
-      user,
-      accessToken,
-      refreshToken,
-    },
+    data: { user, accessToken, refreshToken },
   });
 });
 
-//=================forgotpassword===============
+// =================== Google Login ====================
+export const googleLogin = asyncHandler(async (req, res, next) => {
+  const { token } = req.body;
+  const payload = await verifyGoogleToken(token);
+
+  const { email, name, sub } = payload;
+
+  let user = await UserModel.findOne({ email });
+  if (!user) {
+    user = await UserModel.create({
+      fullName: name,
+      email,
+      provider: providerEnum.google,
+      googleId: sub,
+    });
+  }
+
+  const accessToken = generateToken({
+    payload: { _id: user._id, role: user.role },
+    signature: process.env.ACCESS_TOKEN_USER_SIGNATURE,
+    options: { expiresIn: process.env.ACCESS_EXPIRES_IN || '15m' },
+  });
+
+  const refreshToken = generateToken({
+    payload: { _id: user._id, role: user.role },
+    signature: process.env.REFRESH_TOKEN_USER_SIGNATURE,
+    options: { expiresIn: process.env.REFRESH_EXPIRES_IN || '7d' },
+  });
+
+  await UserModel.findByIdAndUpdate(user._id, { $push: { refreshTokens: { token: refreshToken } } });
+
+  return successResponse({
+    res,
+    message: 'Google login successful',
+    data: { user, accessToken, refreshToken },
+  });
+});
+
+//================= Forgot Password ===============
 export const forgotPassword = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
 
@@ -156,10 +204,9 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
   const otp = customAlphabet("0123456789", 4)();
   const hashOTP = await generateHash({ plaintext: otp });
 
-  user.forgotCode = hashOTP;
-  user.confirmEmailOTPExpiresAt = Date.now() + 2 * 60 * 1000;
+  user.resetPasswordOTP = hashOTP;
+  user.resetPasswordOTPExpiresAt = Date.now() + 2 * 60 * 1000;
   await user.save();
-
 
   await sendTestEmail({
     to: email,
@@ -169,32 +216,54 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
 
   return successResponse({ res, message: "Reset code sent to email", data: { user } });
 });
-//======================Reset Password========================
+
+//================= Resend Reset Password OTP ===============
+export const resendResetPasswordOTP = asyncHandler(async (req, res, next) => {
+  const { email } = req.body;
+
+  const user = await UserModel.findOne({ email, provider: providerEnum.system });
+  if (!user) return next(new Error("Invalid account", { cause: 404 }));
+
+  const otp = customAlphabet("0123456789", 4)();
+  user.resetPasswordOTP = await generateHash({ plaintext: otp });
+  user.resetPasswordOTPExpiresAt = Date.now() + 2 * 60 * 1000;
+  user.resetPasswordOTPRetries = (user.resetPasswordOTPRetries || 0) + 1;
+
+  await user.save();
+
+  await sendTestEmail({
+    to: email,
+    subject: "New Reset Password OTP",
+    html: `<h1>Your new OTP is: ${otp}</h1><p>It will expire in 2 minutes.</p>`,
+  });
+
+  return successResponse({ res, message: "Reset OTP resent successfully", data: { user } });
+});
+
+//================= Reset Password ===============
 export const resetPassword = asyncHandler(async (req, res, next) => {
   const { email, otp, newPassword } = req.body;
-
 
   const user = await UserModel.findOne({ email, provider: providerEnum.system });
   if (!user) return next(new Error("Invalid email", { cause: 404 }));
 
-  if (!user.forgotCode || Date.now() > user.confirmEmailOTPExpiresAt) {
+  if (!user.resetPasswordOTP || Date.now() > user.resetPasswordOTPExpiresAt) {
     return next(new Error("Reset code expired", { cause: 400 }));
   }
 
-  const match = await compareHash({ plaintext: otp, hashValue: user.forgotCode });
+  const match = await compareHash({ plaintext: otp, hashValue: user.resetPasswordOTP });
   if (!match) return next(new Error("Invalid reset code", { cause: 400 }));
-
 
   const hashNewPassword = await generateHash({ plaintext: newPassword });
 
-
   user.password = hashNewPassword;
-  user.forgotCode = undefined;
-  user.confirmEmailOTPExpiresAt = undefined;
+  user.resetPasswordOTP = undefined;
+  user.resetPasswordOTPExpiresAt = undefined;
   await user.save();
 
   return successResponse({ res, message: "Password reset successfully", data: { user } });
 });
+
 //------------------------------------------------
 export const refreshAccessToken = asyncHandler(async (req, res, next) => {
   const { refreshToken } = req.body;
@@ -202,12 +271,12 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
 
   const decoded = verifyToken({
     token: refreshToken,
-    signature: process.env.REFRESH_TOKEN_USER_SIGNATURE
+    signature: process.env.REFRESH_TOKEN_USER_SIGNATURE,
   });
 
   const user = await UserModel.findOne({
     _id: decoded._id,
-    "refreshTokens.token": refreshToken
+    "refreshTokens.token": refreshToken,
   });
   if (!user) return next(new Error("Invalid refresh token", { cause: 401 }));
 
@@ -219,14 +288,15 @@ export const refreshAccessToken = asyncHandler(async (req, res, next) => {
 
   return successResponse({ res, data: { accessToken: newAccessToken } });
 });
-//----------------------------------------------------
+
+//------------------------------------------------
 export const logout = asyncHandler(async (req, res, next) => {
   const { refreshToken } = req.body;
   if (!refreshToken) return next(new Error("Refresh token required", { cause: 401 }));
 
   const decoded = verifyToken({
     token: refreshToken,
-    signature: process.env.REFRESH_TOKEN_USER_SIGNATURE
+    signature: process.env.REFRESH_TOKEN_USER_SIGNATURE,
   });
 
   await UserModel.updateOne(

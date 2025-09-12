@@ -1,0 +1,49 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Event & Venue Map</h1>
+    <p>Explore events and venues on the interactive map</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="map-controls">
+    <div class="toggle-buttons">
+      <button 
+        class="toggle-btn" 
+        [class.active]="showEvents"
+        (click)="toggleEvents()">
+        Events
+      </button>
+      <button 
+        class="toggle-btn" 
+        [class.active]="showVenues"
+        (click)="toggleVenues()">
+        Venues
+      </button>
+    </div>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-marker events"></div>
+        <span>Events</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-marker venues"></div>
+        <span>Venues</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="map" class="map-container"></div>
+
+  <div class="map-stats">
+    <div class="stat-card">
+      <div class="stat-number">{{events.length}}</div>
+      <div class="stat-label">Events</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number">{{venues.length}}</div>
+      <div class="stat-label">Venues</div>
+    </div>
+  </div>
+</div>

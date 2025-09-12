@@ -13,7 +13,7 @@ export const authValidation = {
       age: generalFields.age,
       lang: generalFields.lang,
       role: joi.string()
-        .valid(roleEnum.user, roleEnum.organizer) // يسمح فقط user أو organizer
+        .valid(roleEnum.user, roleEnum.organizer)
         .default(roleEnum.user),
     }).required(),
   },
@@ -39,6 +39,12 @@ export const authValidation = {
   },
 
   forgotPassword: {
+    body: joi.object({
+      email: generalFields.email.required(),
+    }).required(),
+  },
+
+  resendResetPassword: {
     body: joi.object({
       email: generalFields.email.required(),
     }).required(),

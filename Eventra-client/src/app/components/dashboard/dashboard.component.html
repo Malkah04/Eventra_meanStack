@@ -1,0 +1,141 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Welcome back, {{currentUser?.firstName}} {{currentUser?.lastName}}!</h1>
+    <p>Here's what's happening with your events</p>
+  </div>
+</div>
+
+<!-- باقي الكود زي ما هو -->
+
+<div class="container">
+  <div class="dashboard-grid">
+    <!-- Quick Stats -->
+    <div class="stats-section">
+      <div class="section-header">
+        <h2>Quick Overview</h2>
+      </div>
+      <div class="stats-cards">
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>book</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{recentBookings.length}}</div>
+            <div class="stat-label">Total Bookings</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>event</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{upcomingEvents.length}}</div>
+            <div class="stat-label">Available Events</div>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">
+            <mat-icon>account_circle</mat-icon>
+          </div>
+          <div class="stat-content">
+            <div class="stat-number">{{currentUser?.role | titlecase}}</div>
+            <div class="stat-label">Account Type</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Bookings -->
+    <div class="bookings-section">
+      <div class="section-header">
+        <h2>Recent Bookings</h2>
+        <a routerLink="/bookings" class="view-all-link">View All</a>
+      </div>
+      
+      <div class="loading-spinner" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <div class="bookings-list" *ngIf="!isLoading">
+        <div class="booking-card" *ngFor="let booking of recentBookings">
+          <div class="booking-info">
+            <h4>{{booking.event?.title || 'Event'}}</h4>
+            <p class="booking-details">
+              <span class="quantity">{{booking.quantity}} tickets</span>
+              <span class="date">{{formatDate(booking.bookingDate)}}</span>
+            </p>
+          </div>
+          <div class="booking-status">
+            <span class="status-badge" [style.background-color]="getStatusColor(booking.status)">
+              {{booking.status | titlecase}}
+            </span>
+            <div class="booking-price">${{booking.totalPrice}}</div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="recentBookings.length === 0">
+          <mat-icon>book_online</mat-icon>
+          <h3>No bookings yet</h3>
+          <p>Start exploring events to make your first booking!</p>
+          <a routerLink="/events" mat-raised-button color="primary">Browse Events</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Upcoming Events -->
+    <div class="events-section">
+      <div class="section-header">
+        <h2>Trending Events</h2>
+        <a routerLink="/events" class="view-all-link">View All</a>
+      </div>
+
+      <div class="loading-spinner" *ngIf="isLoading">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+
+      <div class="events-grid" *ngIf="!isLoading">
+        <div class="event-card" *ngFor="let event of upcomingEvents">
+          <div class="event-image">
+            <img [src]="event.images[0] || 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg'" 
+                 [alt]="event.title" 
+                 loading="lazy">
+            <div class="event-price">{{formatPrice(event.price)}}</div>
+          </div>
+          <div class="event-content">
+            <h4>{{event.title}}</h4>
+            <p class="event-date">
+              <mat-icon>event</mat-icon>
+              {{formatDate(event.date)}}
+            </p>
+            <button mat-button color="primary" class="book-btn">Book Now</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Actions -->
+  <div class="actions-section">
+    <div class="section-header">
+      <h2>Quick Actions</h2>
+    </div>
+    <div class="action-buttons">
+      <a routerLink="/events" mat-raised-button color="primary">
+        <mat-icon>search</mat-icon>
+        Browse Events
+      </a>
+      <a routerLink="/venues" mat-outlined-button>
+        <mat-icon>location_city</mat-icon>
+        Find Venues
+      </a>
+      <a routerLink="/map" mat-outlined-button>
+        <mat-icon>map</mat-icon>
+        Explore Map
+      </a>
+      <a routerLink="/profile" mat-outlined-button>
+        <mat-icon>settings</mat-icon>
+        Edit Profile
+      </a>
+    </div>
+  </div>
+</div>
