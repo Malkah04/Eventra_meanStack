@@ -1,0 +1,10 @@
+/* Global app styles */
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+/* Ensure router outlet content takes full space */
+router-outlet + * {
+  flex: 1;
+}

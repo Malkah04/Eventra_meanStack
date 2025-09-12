@@ -1,0 +1,7 @@
+<button mat-raised-button color="warn" class="full-width" (click)="onGoogleLogin()" [disabled]="isLoading">
+  <mat-icon>account_circle</mat-icon>
+  <span *ngIf="!isLoading">Continue with Google</span>
+  <mat-spinner *ngIf="isLoading" diameter="20"></mat-spinner>
+</button>
+
+<p class="error" *ngIf="errorMessage">{{ errorMessage }}</p>

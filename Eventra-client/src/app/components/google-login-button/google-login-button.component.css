@@ -1,0 +1,14 @@
+.full-width {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.error {
+  color: red;
+  margin-top: 8px;
+  font-size: 0.875rem;
+}

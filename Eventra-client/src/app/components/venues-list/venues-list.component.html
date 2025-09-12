@@ -1,0 +1,107 @@
+<div class="page-header">
+  <div class="container">
+    <h1>Find Venues</h1>
+    <p>Discover the perfect venue for your next event</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="filters-section">
+    <div class="filter-group">
+      <mat-form-field appearance="outline">
+        <mat-label>City</mat-label>
+        <mat-select [(value)]="selectedCity" (selectionChange)="onCityChange()">
+          <mat-option value="">All Cities</mat-option>
+          <mat-option *ngFor="let city of cities" [value]="city">
+            {{city}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="results-info">
+      <p>Showing {{venues.length}} of {{totalVenues}} venues</p>
+    </div>
+  </div>
+
+  <div class="loading-spinner" *ngIf="isLoading">
+    <mat-spinner></mat-spinner>
+  </div>
+
+  <div class="card-grid" *ngIf="!isLoading">
+    <div class="custom-card" *ngFor="let venue of venues">
+      <div class="card-image">
+        <img [src]="venue.images[0] || 'https://images.pexels.com/photos/1595385/pexels-photo-1595385.jpeg'" 
+             [alt]="venue.name" 
+             loading="lazy">
+        <div class="price-badge">{{formatPrice(venue.pricePerDay)}}</div>
+      </div>
+      
+      <div class="card-content">
+        <div class="card-header">
+          <h3 class="venue-name">{{venue.name}}</h3>
+          <div class="venue-location">
+            <mat-icon>location_on</mat-icon>
+            <span>{{venue.city}}</span>
+          </div>
+        </div>
+        
+        <p class="venue-description">{{venue.description | slice:0:120}}{{venue.description.length > 120 ? '...' : ''}}</p>
+        
+        <div class="amenities" *ngIf="venue.amenities.length > 0">
+          <div class="amenity-tag" *ngFor="let amenity of venue.amenities | slice:0:3">
+            {{amenity}}
+          </div>
+          <div class="amenity-tag more" *ngIf="venue.amenities.length > 3">
+            +{{venue.amenities.length - 3}} more
+          </div>
+        </div>
+        
+        <div class="card-footer">
+          <div class="venue-info">
+            <div class="info-item">
+              <mat-icon>people</mat-icon>
+              <span>Capacity: {{venue.capacity}}</span>
+            </div>
+            <div class="info-item">
+              <mat-icon>location_city</mat-icon>
+              <span>{{venue.address}}</span>
+            </div>
+          </div>
+          
+          <div class="card-actions">
+            <button mat-outlined-button class="view-btn">
+              View Details
+            </button>
+            <button mat-raised-button color="primary" class="book-btn">
+              Book Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="no-results" *ngIf="!isLoading && venues.length === 0">
+    <mat-icon>location_off</mat-icon>
+    <h3>No venues found</h3>
+    <p>Try adjusting your filters or check back later for new venues.</p>
+  </div>
+
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button mat-icon-button [disabled]="currentPage === 1" (click)="onPageChange(currentPage - 1)">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    
+    <button mat-button 
+            *ngFor="let page of getPageNumbers()" 
+            [class.active]="page === currentPage"
+            (click)="onPageChange(page)">
+      {{page}}
+    </button>
+    
+    <button mat-icon-button [disabled]="currentPage === totalPages" (click)="onPageChange(currentPage + 1)">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+</div>

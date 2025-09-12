@@ -1,0 +1,49 @@
+<div class="auth-container">
+  <div class="auth-card">
+    <div class="auth-header">
+      <h1>Welcome Back</h1>
+      <p>Sign in to your Eventra account</p>
+    </div>
+
+    <div class="auth-content">
+      <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" formControlName="email" placeholder="Enter your email">
+          <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+            {{ getErrorMessage('email') }}
+          </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input matInput type="password" formControlName="password" placeholder="Enter your password">
+          <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+            {{ getErrorMessage('password') }}
+          </mat-error>
+        </mat-form-field>
+
+        <div class="form-actions">
+          <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="!loginForm.valid || isLoading">
+            <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+            <span *ngIf="!isLoading">Sign In</span>
+          </button>
+        </div>
+      </form>
+
+      <div class="divider"><span>or</span></div>
+
+      <app-google-login-button (loginSuccess)="redirectToDashboard()"></app-google-login-button>
+
+      <div class="auth-links">
+        <a routerLink="/forgot-password" class="link">Forgot your password?</a>
+      </div>
+    </div>
+
+    <div class="auth-footer">
+      <p>Don't have an account? <a routerLink="/signup" class="link-primary">Sign up</a></p>
+    </div>
+  </div>
+</div>

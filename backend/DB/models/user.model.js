@@ -45,6 +45,7 @@ const userSchema = new mongoose.Schema(
       default: roleEnum.user,
     },
     phone: String,
+    avatar: { type: String, default: null },
 
     // -------------- تأكيد الإيميل --------------
     confirmEmailAt: Date, // بدل confirmEmail
