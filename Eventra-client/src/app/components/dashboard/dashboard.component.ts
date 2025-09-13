@@ -5,6 +5,7 @@ import { EventService } from '../../services/event.service';
 import { User } from '../../models/models/user.model';
 import { Booking } from '../../models/models/booking.model';
 import { Event } from '../../models/models/event.model';
+import { CategoryService } from 'src/app/services/category.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -15,17 +16,30 @@ export class DashboardComponent implements OnInit {
   currentUser: User | null = null;
   recentBookings: Booking[] = [];
   upcomingEvents: Event[] = [];
+  filteredEvents: Event[] = [];
+  categories: { id: string, name: string }[] = [];
+  selectedCategory: string = '';
   isLoading = false;
+  events: any[]= [];
 
   constructor(
     private authService: AuthService,
     private bookingService: BookingService,
-    private eventService: EventService
+    private eventService: EventService,
+    private categoryService: CategoryService
   ) {}
 
   ngOnInit(): void {
     this.currentUser = this.authService.getCurrentUser();
     this.loadDashboardData();
+    this.loadCategories();
+    this.loadEvents();  // تحميل كل الأحداث في البداية
+  }
+
+  loadCategories() {
+    this.categoryService.getAll().subscribe((res: any) => {
+      this.categories = res.data.categories;
+    });
   }
 
   loadDashboardData(): void {
@@ -39,17 +53,43 @@ export class DashboardComponent implements OnInit {
         console.error('Error loading bookings:', error);
       }
     });
+  }
 
-    this.eventService.getEvents(1, 6).subscribe({
-      next: (response) => {
-        this.upcomingEvents = response.events;
-        this.isLoading = false;
-      },
-      error: (error) => {
-        console.error('Error loading events:', error);
-        this.isLoading = false;
-      }
-    });
+  loadEvents(categoryId?: string) {
+  this.isLoading = true;
+  this.eventService.getEvents(1, 10, categoryId).subscribe({
+    next: (res: any) => {
+      const allEvents: Event[] = res.data.events;
+      const today = new Date();
+
+      // فلترة الأحداث القادمة (تاريخها أكبر أو يساوي اليوم)
+      this.upcomingEvents = allEvents.filter((event: Event) => {
+        const eventDate = new Date(event.date);
+        return eventDate >= today;
+      });
+
+      this.isLoading = false;
+    },
+    error: (err) => {
+      console.error('Failed to load events:', err);
+      this.isLoading = false;
+    }
+  });
+}
+
+
+
+
+  applyCategoryFilter(): void {
+    if (this.selectedCategory) {
+      this.filteredEvents = this.upcomingEvents.filter(event => event.categoryId._id === this.selectedCategory);
+    } else {
+      this.filteredEvents = [...this.upcomingEvents];
+    }
+  }
+
+  onCategoryChange(): void {
+    this.loadEvents(this.selectedCategory);
   }
 
   formatDate(dateString: string): string {

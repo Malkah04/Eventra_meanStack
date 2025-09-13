@@ -4,3 +4,31 @@
 <div class="app-container">
   <router-outlet></router-outlet>
 </div>
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #sidenav class="sidenav" mode="side" opened>
+    <div class="logo">Eventra</div>
+    <mat-nav-list>
+      <a mat-list-item routerLink="/events" routerLinkActive="active">Events</a>
+      <a mat-list-item routerLink="/categories" routerLinkActive="active">Categories</a>
+      <a mat-raised-button color="primary" routerLink="/events/create">Create Event</a>
+      <a routerLink="/events/create">Create New Event</a>
+
+    </mat-nav-list>
+  </mat-sidenav>
+
+  <mat-sidenav-content>
+    <mat-toolbar color="primary">
+      <button mat-icon-button (click)="sidenav.toggle()" class="mobile-toggle">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span>Eventra</span>
+      <span class="spacer"></span>
+      <button mat-icon-button><mat-icon>search</mat-icon></button>
+      <button mat-icon-button><mat-icon>account_circle</mat-icon></button>
+    </mat-toolbar>
+
+    <div class="content">
+      <router-outlet></router-outlet>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
