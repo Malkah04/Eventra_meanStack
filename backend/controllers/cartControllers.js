@@ -1,16 +1,23 @@
+
 import * as DBService from "../DB/db.service.js";
 import { asyncHandler, successResponse } from "../utils/response.js";
 import CartModel from "../DB/models/cart.js";
+import EventModel from "../DB/models/event.js"; // 👈 عشان نجيب السعر الحقيقي
 
 //  Add ticket to the cart
 export const addToCart = asyncHandler(async (req, res, next) => {
-  const { userID, eventID, quantity, price } = req.body;
+  const { userID, eventID, quantity } = req.body;
+
+  // ✅ هجيب الـ event من الداتا بيز
+  const event = await EventModel.findById(eventID);
+  if (!event) return next(new Error("Event not found", { cause: 404 }));
+
+  const price = event.price; // السعر الحقيقي من DB
 
   // Find active cart for user
   let cart = await CartModel.findOne({ userID, status: "active" });
 
   if (!cart) {
-    // If there is no active cart, create a new one
     cart = new CartModel({
       userID,
       status: "active",
@@ -25,7 +32,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
   );
 
   if (existingItem) {
-    return res.status(400).json({ message: "item already in the cart" });
+    return res.status(400).json({ message: "Item already in the cart" });
   } else {
     cart.items.push({
       eventID,
@@ -35,7 +42,7 @@ export const addToCart = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Update the total amount
+  // Update total amount
   cart.totalAmount = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
   await cart.save();
 
@@ -50,12 +57,35 @@ export const removeFromCart = asyncHandler(async (req, res, next) => {
 
   if (!cart) return next(new Error("Cart not found", { cause: 404 }));
 
-  // Remove the ticket
   cart.items = cart.items.filter((item) => item.eventID.toString() !== eventID);
-
-  // Update total
   cart.totalAmount = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
 
+  await cart.save();
+
+  return successResponse({ res, data: { cart } });
+});
+
+// ✏️ Update Quantity
+export const updateQuantity = asyncHandler(async (req, res, next) => {
+  const { userID, eventID, quantity } = req.body;
+
+  if (quantity < 1) return next(new Error("Quantity must be at least 1"));
+
+  const cart = await CartModel.findOne({ userID, status: "active" });
+  if (!cart) return next(new Error("Cart not found", { cause: 404 }));
+
+  const item = cart.items.find((item) => item.eventID.toString() === eventID);
+  if (!item) return next(new Error("Item not found in cart", { cause: 404 }));
+
+  // ✅ هجيب السعر من الـ event تاني (ضمان أمان)
+  const event = await EventModel.findById(eventID);
+  if (!event) return next(new Error("Event not found", { cause: 404 }));
+
+  item.quantity = quantity;
+  item.price = event.price;
+  item.subtotal = quantity * event.price;
+
+  cart.totalAmount = cart.items.reduce((acc, item) => acc + item.subtotal, 0);
   await cart.save();
 
   return successResponse({ res, data: { cart } });
@@ -83,7 +113,7 @@ export const getCart = asyncHandler(async (req, res, next) => {
   const cart = await DBService.findOne({
     model: CartModel,
     filter: { userID, status: "active" },
-    populate: ["items.eventID"], // to get data about event
+    populate: ["items.eventID"],
   });
 
   return cart
