@@ -6,15 +6,20 @@ import * as validators from "../validation/cart.validation.js";
 
 const router = Router();
 
-//  Add ticket to the cart
 router.post(
   "/add",
-  authentication(), // must be signed in
+  authentication(),
   validation(validators.addToCart),
   cartController.addToCart
 );
 
-//  Remove ticket from cart
+router.put(
+  "/update", // 👈 update quantity
+  authentication(),
+  validation(validators.updateQuantity),
+  cartController.updateQuantity
+);
+
 router.delete(
   "/remove",
   authentication(),
@@ -22,7 +27,6 @@ router.delete(
   cartController.removeFromCart
 );
 
-//  Empty cart
 router.delete(
   "/empty",
   authentication(),
@@ -30,7 +34,6 @@ router.delete(
   cartController.emptyCart
 );
 
-//  Get specific cart by user ID
 router.get(
   "/:userID",
   authentication(),
@@ -38,7 +41,6 @@ router.get(
   cartController.getCart
 );
 
-//  Checkout (payment)
 router.post(
   "/checkout",
   authentication(),
