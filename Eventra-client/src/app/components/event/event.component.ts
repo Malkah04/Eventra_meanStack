@@ -27,7 +27,9 @@ export class EventComponent {
 
   getAllEvents() {
     this.eventService.getEvents().subscribe((data) => {
-      this.events = data;
+      console.log(data);
+      
+      this.events = data.data.events;
     });
   }
 

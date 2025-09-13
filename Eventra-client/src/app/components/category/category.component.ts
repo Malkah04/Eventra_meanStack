@@ -25,10 +25,10 @@ export class CategoryComponent {
   }
 
   getAllCategories() {
-    this.categoryService.getCategories().subscribe((data) => {
-      this.categories = data;
-    });
-  }
+  this.categoryService.getCategories().subscribe((data) => {
+    this.categories = data.data.categories;
+  });
+}
 
   deleteCategory(categoryId: string) {
     this.categoryService.deleteCategory(categoryId).subscribe(() => {

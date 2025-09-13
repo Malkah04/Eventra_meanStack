@@ -7,7 +7,7 @@
   })
   export class CartService {
 
-    private baseUrl = 'http://localhost:5000/cart'; // عدلي حسب سيرفرك
+    private baseUrl = 'http://localhost:5000/api/cart';
 
     constructor(private http: HttpClient) {}
 

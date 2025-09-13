@@ -22,6 +22,7 @@
 
 
 
+// Social Login
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -76,76 +77,12 @@ import { OrganizerCartComponent } from './components/organizer-cart/organizer-ca
 import { EventComponent } from './components/event/event.component';
 import { CategoryComponent } from './components/category/category.component';
 import { CartComponent } from './components/cart/cart.component';
-import { VenuesListComponent } from './components/venues-list/venues-list.component';
-@NgModule({
-  declarations: [
-    AppComponent,
-    NavbarComponent,
-    LoginComponent,
-    SignupComponent,
-    DashboardComponent,
-    MapComponent,
-    ConfirmEmailComponent,
-    ForgotPasswordComponent,
-    ResetPasswordComponent,
-    GoogleLoginButtonComponent ,
-    ErrorMessageComponent,
-    SpinnerComponent,
-    CartComponent,
-    CategoryComponent,
-    EventComponent,
-    OrganizerCartComponent,
-    VenuesListComponent
-  
-  ],
-  imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-    AppRoutingModule,
-    HttpClientModule,
-    ReactiveFormsModule,
-    FormsModule,
-    SocialLoginModule,
+import { VenueComponent } from './venue/venue.component';
 
-    // Material Modules
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    MatDividerModule,
-    MatChipsModule
-  ],
-  providers: [
-    AuthService,
-    EventService,
-    OrganizerCartService,
-    AuthGuard,
-    RoleGuard,
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: AuthInterceptor,
-      multi: true
-    },
-    {
-      provide: 'SocialAuthServiceConfig',
-      useValue: {
-        autoLogin: false,
-        providers: [
-          {
-            id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(
-              '50990553909-n1krvis5mpprq9l5amija61h4v04roej.apps.googleusercontent.com'
-            )
-          }
-        ]
-      } as SocialAuthServiceConfig,
-    }
-  ],
-  bootstrap: [AppComponent]
+@NgModule({
+  declarations: [AppComponent, OrganizerCartComponent, EventComponent, CategoryComponent, CartComponent, VenueComponent],
+  imports: [BrowserModule,FormsModule, AppRoutingModule, HttpClientModule],
+  providers: [],
+  bootstrap: [AppComponent],
 })
 export class AppModule { }
