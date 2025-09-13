@@ -4,12 +4,7 @@ import { Observable } from 'rxjs';
 import { Category } from '../models/models/category.model';
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-<<<<<<< HEAD
-  
-  private apiUrl = 'http://localhost:5000/api/categories';
-=======
   private api = 'http://localhost:5000/api/categories';
->>>>>>> frontend/feature/evet-category
 
   constructor(private http: HttpClient) {}
 

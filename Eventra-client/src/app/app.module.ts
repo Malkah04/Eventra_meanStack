@@ -1,31 +1,3 @@
-<<<<<<< HEAD
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// Social Login
-=======
->>>>>>> frontend/feature/evet-category
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -34,7 +6,10 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 // Social Login
-import { SocialLoginModule, SocialAuthServiceConfig } from '@abacritt/angularx-social-login';
+import {
+  SocialLoginModule,
+  SocialAuthServiceConfig,
+} from '@abacritt/angularx-social-login';
 import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
 // Angular Material Modules
@@ -74,21 +49,13 @@ import { MapComponent } from './components/map/map.component';
 import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.component';
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
-import { GoogleLoginButtonComponent  } from './components/google-login-button/google-login-button.component';
+import { GoogleLoginButtonComponent } from './components/google-login-button/google-login-button.component';
 import { ErrorMessageComponent } from './components/error-message/error-message.component';
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { OrganizerCartComponent } from './components/organizer-cart/organizer-cart.component';
 import { CartComponent } from './components/cart/cart.component';
-<<<<<<< HEAD
-import { VenueComponent } from './venue/venue.component';
 
-@NgModule({
-  declarations: [AppComponent, OrganizerCartComponent, EventComponent, CategoryComponent, CartComponent, VenueComponent],
-  imports: [BrowserModule,FormsModule, AppRoutingModule, HttpClientModule],
-  providers: [],
-  bootstrap: [AppComponent],
-=======
-import { EventCreateComponent} from './components/event-create/event-create.component';
+import { EventCreateComponent } from './components/event-create/event-create.component';
 import { EventDetailsComponent } from './components/event-details/event-details.component';
 import { EventEditComponent } from './components/event-edit/event-edit.component';
 import { EventsListComponent } from './components/event-list/event-list.component';
@@ -96,6 +63,14 @@ import { CategoryCreateComponent } from './components/category-create/category-c
 import { CategoryEditComponent } from './components/category-edit/category-edit.component';
 import { CategoriesListComponent } from './components/category-list/category-list.component';
 import { VenuesListComponent } from './components/venues-list/venues-list.component';
+
+import { VenueComponent } from './venue/venue.component';
+
+// @NgModule({
+//   declarations: [AppComponent, OrganizerCartComponent, EventComponent, CategoryComponent, CartComponent, VenueComponent],
+//   imports: [BrowserModule,FormsModule, AppRoutingModule, HttpClientModule],
+//   providers: [],
+//   bootstrap: [AppComponent],
 
 @NgModule({
   declarations: [
@@ -108,7 +83,7 @@ import { VenuesListComponent } from './components/venues-list/venues-list.compon
     ConfirmEmailComponent,
     ForgotPasswordComponent,
     ResetPasswordComponent,
-    GoogleLoginButtonComponent ,
+    GoogleLoginButtonComponent,
     ErrorMessageComponent,
     SpinnerComponent,
     CartComponent,
@@ -120,8 +95,7 @@ import { VenuesListComponent } from './components/venues-list/venues-list.compon
     CategoryCreateComponent,
     CategoryEditComponent,
     CategoriesListComponent,
-    VenuesListComponent
-  
+    VenuesListComponent,
   ],
   imports: [
     BrowserModule,
@@ -145,7 +119,7 @@ import { VenuesListComponent } from './components/venues-list/venues-list.compon
     MatDividerModule,
     MatTableModule,
     MatPaginatorModule,
-    MatChipsModule
+    MatChipsModule,
   ],
   providers: [
     AuthService,
@@ -156,7 +130,7 @@ import { VenuesListComponent } from './components/venues-list/venues-list.compon
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,
-      multi: true
+      multi: true,
     },
     {
       provide: 'SocialAuthServiceConfig',
@@ -167,13 +141,12 @@ import { VenuesListComponent } from './components/venues-list/venues-list.compon
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
               '50990553909-n1krvis5mpprq9l5amija61h4v04roej.apps.googleusercontent.com'
-            )
-          }
-        ]
+            ),
+          },
+        ],
       } as SocialAuthServiceConfig,
-    }
+    },
   ],
-  bootstrap: [AppComponent]
->>>>>>> frontend/feature/evet-category
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

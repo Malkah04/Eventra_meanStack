@@ -9,7 +9,8 @@ import { Category } from '../models/models/category.model';
 })
 export class EventService {
   private apiUrl = 'http://localhost:5000/api/events';
-
+  private categoriesUrl = 'http://localhost:5000/api/categories';
+  
   constructor(private http: HttpClient) {}
 
   getEvents(page = 1, limit = 10, categoryId?: string): Observable<any> {
@@ -47,8 +48,6 @@ export class EventService {
   approveEvent(id: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/approve`, {});
   }
-<<<<<<< HEAD
-=======
 
   getCategories(): Observable<Category[]> {
     return this.http.get<Category[]>(this.categoriesUrl);
@@ -56,5 +55,4 @@ export class EventService {
   getAllByOrganizer(organizerId: string): Observable<Event[]> {
   return this.http.get<Event[]>(`${this.apiUrl}?organizer=${organizerId}`);
 }
->>>>>>> frontend/feature/evet-category
 }
