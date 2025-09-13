@@ -8,7 +8,6 @@ import { Event, CreateEventRequest, Category } from '../models/models/event.mode
 })
 export class EventService {
   private apiUrl = 'http://localhost:5000/api/events';
-  private categoriesUrl = 'http://localhost:5000/api/categories';
 
   constructor(private http: HttpClient) {}
 
@@ -46,9 +45,5 @@ export class EventService {
 
   approveEvent(id: string): Observable<any> {
     return this.http.patch(`${this.apiUrl}/${id}/approve`, {});
-  }
-
-  getCategories(): Observable<Category[]> {
-    return this.http.get<Category[]>(this.categoriesUrl);
   }
 }
