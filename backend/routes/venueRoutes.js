@@ -1,6 +1,9 @@
 import express from "express";
 import * as venueController from "../controllers/venueController.js";
-import { authentication, authorization } from "../middleware/authentication.middleware.js";
+import {
+  authentication,
+  authorization,
+} from "../middleware/authentication.middleware.js";
 import { roleEnum } from "../DB/models/user.model.js";
 import { validation } from "../middleware/validation.middleware.js";
 import { venueValidation } from "../validation/venue.validation.js";
@@ -27,8 +30,14 @@ venueRouter.get(
   venueController.getVenuesByOwner
 );
 
+venueRouter.get("/filter", venueController.venueFilter);
+
 // Get single venue (عام)
-venueRouter.get("/:id", validation(venueValidation.getById), venueController.getVenueById);
+venueRouter.get(
+  "/:id",
+  validation(venueValidation.getById),
+  venueController.getVenueById
+);
 
 // Update venue (Organizer/Admin لكن لازم يكون الـ owner أو Admin)
 venueRouter.patch(
@@ -47,5 +56,7 @@ venueRouter.delete(
   validation(venueValidation.delete),
   venueController.deleteVenue
 );
+
+venueRouter.get("/search/:searchItem", venueController.venueSearch);
 
 export default venueRouter;
