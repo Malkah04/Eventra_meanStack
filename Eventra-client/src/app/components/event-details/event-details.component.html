@@ -1,0 +1,42 @@
+<div *ngIf="event" class="event-details">
+  <!-- بيانات الحدث الأساسية -->
+  <p><strong>Name:</strong> {{ event.name }}</p>
+  <p><strong>Description:</strong> {{ event.description || 'No description provided' }}</p>
+  <p><strong>Category:</strong> {{ event.categoryId?.name || 'N/A' }}</p>
+  <p><strong>Venue:</strong> {{ event.venueId?.name || 'N/A' }}</p>
+  <p><strong>Ticket Price:</strong> {{ event.ticketPrice }} EGP</p>
+  <p><strong>Date:</strong> {{ event.date | date: 'fullDate' }}</p>
+  <p><strong>Time:</strong> {{ event.time }}</p>
+
+  <!-- عرض أزرار الحجز للمستخدم العادي -->
+<div *ngIf="isAttendee">
+  <h1><label for="ticketQuantity">Number of Tickets:</label></h1>
+  <input
+    id="ticketQuantity"
+    type="number"
+    [(ngModel)]="ticketQuantity"
+    min="1"
+  />
+  <button (click)="addToCart()">Add to Cart</button>
+</div>
+
+<!-- عرض حجزات الأورجانيزر -->
+<div *ngIf="isOrganizer" class="organizer-bookings">
+  <h1>Bookings for this event:</h1>
+
+  <div *ngIf="loadingBookings" class="loading">
+    Loading bookings...
+  </div>
+
+  <div *ngIf="!loadingBookings && bookings.length === 0" class="no-bookings">
+   <b> No bookings yet.</b>
+  </div>
+
+  <ul *ngIf="!loadingBookings && bookings.length > 0" class="bookings-list">
+    <li *ngFor="let booking of bookings" class="booking-item">
+      <strong>User:</strong> {{ booking.user.name }}<br />
+      <strong>Tickets:</strong> {{ booking.quantity }}<br />
+      <strong>Booked On:</strong> {{ booking.createdAt | date:'medium' }}
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,30 @@
+<h2>Edit Event</h2>
+
+<form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+  <label>Name:</label>
+  <input formControlName="name" />
+
+  <label>Description:</label>
+  <textarea formControlName="description"></textarea>
+
+  <label>Category:</label>
+  <select formControlName="categoryId">
+    <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
+  </select>
+
+  <label>Venue:</label>
+  <select formControlName="venueId">
+    <option *ngFor="let v of venues" [value]="v._id">{{ v.name }}</option>
+  </select>
+
+  <label>Ticket Price:</label>
+  <input type="number" formControlName="ticketPrice" />
+
+  <label>Date:</label>
+  <input type="date" formControlName="date" />
+
+  <label>Time:</label>
+  <input type="time" formControlName="time" />
+
+  <button type="submit">Update Event</button>
+</form>

@@ -59,7 +59,7 @@
       <div class="bookings-list" *ngIf="!isLoading">
         <div class="booking-card" *ngFor="let booking of recentBookings">
           <div class="booking-info">
-            <h4>{{booking.event?.title || 'Event'}}</h4>
+            <h4>{{booking.event?.name || 'Event'}}</h4>
             <p class="booking-details">
               <span class="quantity">{{booking.quantity}} tickets</span>
               <span class="date">{{formatDate(booking.bookingDate)}}</span>
@@ -96,13 +96,14 @@
       <div class="events-grid" *ngIf="!isLoading">
         <div class="event-card" *ngFor="let event of upcomingEvents">
           <div class="event-image">
-            <img [src]="event.images[0] || 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg'" 
-                 [alt]="event.title" 
-                 loading="lazy">
-            <div class="event-price">{{formatPrice(event.price)}}</div>
+            <img [src]="(event.images && event.images.length > 0) ? event.images[0] : 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg'" 
+               [alt]="event.name" 
+               loading="lazy">
+
+            <div class="event-price">{{formatPrice(event.ticketPrice)}}</div>
           </div>
           <div class="event-content">
-            <h4>{{event.title}}</h4>
+            <h4>{{event.name}}</h4>
             <p class="event-date">
               <mat-icon>event</mat-icon>
               {{formatDate(event.date)}}
@@ -138,4 +139,4 @@
       </a>
     </div>
   </div>
-</div>
+

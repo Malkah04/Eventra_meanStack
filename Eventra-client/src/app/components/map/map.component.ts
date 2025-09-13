@@ -73,11 +73,11 @@ export class MapComponent implements OnInit {
 
       const popupContent = `
         <div style="max-width:250px;">
-          <h4>${event.title}</h4>
+          <h4>${event.name}</h4>
           <p>${event.description?.slice(0,100)}...</p>
           <p><b>Date:</b> ${new Date(event.date).toLocaleDateString()}</p>
           <p><b>Time:</b> ${event.time}</p>
-          <p><b>Price:</b> ${event.price === 0 ? 'Free' : '$'+event.price}</p>
+          <p><b>Price:</b> ${event.ticketPrice === 0 ? 'Free' : '$'+event.ticketPrice}</p>
           <button style="background:#d35400;color:white;padding:6px 12px;border:none;border-radius:4px;cursor:pointer;">Book Event</button>
         </div>
       `;

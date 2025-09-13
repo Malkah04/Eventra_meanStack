@@ -1,0 +1,31 @@
+<h2>Create Event</h2>
+<form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
+  <label>Name:</label>
+  <input formControlName="name" type="text" />
+  
+  <label>Description:</label>
+  <textarea formControlName="description"></textarea>
+  
+  <label>Category:</label>
+  <select formControlName="categoryId">
+    <option value="">-- Select Category --</option>
+    <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
+  </select>
+
+  <label>Venue:</label>
+  <select formControlName="venueId">
+    <option value="">-- Select Venue --</option>
+    <option *ngFor="let venue of venues" [value]="venue._id">{{ venue.name }}</option>
+  </select>
+
+  <label>Ticket Price:</label>
+  <input formControlName="ticketPrice" type="number" />
+
+  <label>Date:</label>
+  <input formControlName="date" type="date" />
+
+  <label>Time:</label>
+  <input formControlName="time" type="time" />
+
+  <button type="submit" [disabled]="eventForm.invalid">Create Event</button>
+</form>

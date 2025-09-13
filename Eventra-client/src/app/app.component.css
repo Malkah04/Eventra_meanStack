@@ -8,3 +8,13 @@
 router-outlet + * {
   flex: 1;
 }
+.sidenav-container { height: 100vh; }
+.sidenav { width: 220px; }
+.logo { font-weight: bold; padding: 16px; font-size: 18px; }
+.content { padding: 24px; }
+.spacer { flex: 1 1 auto; }
+.mobile-toggle { display: none; }
+@media (max-width: 800px) {
+  .sidenav { width: 0; }
+  .mobile-toggle { display: inline-flex; }
+}

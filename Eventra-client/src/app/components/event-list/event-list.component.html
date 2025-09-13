@@ -1,0 +1,28 @@
+<h2>My Events</h2>
+<a *ngIf="currentUserRole !== 'user'" routerLink="/organizer/events/create">+ Create New Event</a>
+<div class="filter-category">
+  <label for="category-select">Filter by Category:</label>
+  <select id="category-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
+  <option value="">All Categories</option>
+  <option *ngFor="let category of categories" [value]="category._id">{{ category.name }}</option>
+</select>
+
+</div>
+
+
+<div *ngIf="!loading && events.length > 0" class="events-list">
+  <div *ngFor="let event of events" class="event-card">
+    <p><strong>Name:</strong>{{ event.name }}</p>
+    <p><strong>Description:</strong>{{ event.description }}</p>
+    <p><strong>Category:</strong> {{ event.categoryId?.name }}</p>
+    <p><strong>Venue:</strong> {{ event.venueId?.name }}</p>
+    <p><strong>Price:</strong> {{ event.ticketPrice }} EGP</p>
+    <p><strong>Date:</strong> {{ formatDate(event.date) }} - {{ event.time }}</p>
+
+
+    <button *ngIf="currentUserRole !== 'user'" (click)="goToEdit(event._id)">Edit</button>
+    <button *ngIf="currentUserRole !== 'user'" (click)="deleteEvent(event._id)">Delete</button>
+    <button (click)="goToDetails(event._id)">Details</button>
+  </div>
+</div>
+

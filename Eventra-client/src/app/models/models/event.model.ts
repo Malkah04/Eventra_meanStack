@@ -1,34 +1,37 @@
 import { Venue } from './venue.model';
+import { Category } from './category.model';
 export interface Event {
   _id: string;
-  title: string;
+  name: string; 
   description: string;
   date: string;
   time: string;
-  duration: number;
-  price: number;
-  capacity: number;
-  availableSeats: number;
-  images: string[];
-  categoryId: string;
-  venueId: string;
-  organizerId: string;
+  ticketPrice: number; 
+  categoryId: {
+    _id: string;
+    name: string;
+  };
+  venueId: {
+    _id: string;
+    name: string;
+  };
+  organizerId: {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    fullName: string;
+  };
   location: {
     lat: number;
     lng: number;
   };
-  isApproved: boolean;
   createdAt: string;
   updatedAt: string;
-  venue?: Venue;
-  category?: Category;
+  id: string;
+  images?: string[];
 }
 
-export interface Category {
-  _id: string;
-  name: string;
-  description: string;
-}
 
 export interface CreateEventRequest {
   title: string;

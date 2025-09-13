@@ -1,33 +1,35 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-
-@Injectable({
-  providedIn: 'root'
-})
+import { Category } from '../models/models/category.model';
+@Injectable({ providedIn: 'root' })
 export class CategoryService {
+<<<<<<< HEAD
   
   private apiUrl = 'http://localhost:5000/api/categories';
+=======
+  private api = 'http://localhost:5000/api/categories';
+>>>>>>> frontend/feature/evet-category
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<any> {
-    return this.http.get(this.apiUrl);
+  getAll(): Observable<Category[]> {
+    return this.http.get<Category[]>(this.api);
   }
 
-  getCategoryById(id: string): Observable<any> {
-    return this.http.get('${this.apiUrl}/${id}');
+  create(category: Category): Observable<Category> {
+    return this.http.post<Category>(this.api, category);
   }
 
-  createCategory(data: any): Observable<any> {
-    return this.http.post(this.apiUrl, data);
+  update(id: string, category: Category): Observable<Category> {
+    return this.http.put<Category>(`${this.api}/${id}`, category);
   }
 
-  updateCategory(id: string, data: any): Observable<any> {
-    return this.http.put('${this.apiUrl}/${id}', data);
+  delete(id: string): Observable<any> {
+    return this.http.delete(`${this.api}/${id}`);
   }
 
-  deleteCategory(id: string): Observable<any> {
-    return this.http.delete('${this.apiUrl}/${id}');
+  getById(id: string): Observable<Category> {
+    return this.http.get<Category>(`${this.api}/${id}`);
   }
 }

@@ -23,6 +23,13 @@ const eventSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    location: {
+  type: {
+    lat: Number,
+    lng: Number
+  },
+  required: true
+}
   },
   {
     timestamps: true,

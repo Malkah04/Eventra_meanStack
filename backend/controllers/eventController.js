@@ -1,6 +1,7 @@
 import { asyncHandler, successResponse } from "../utils/response.js";
 import Event from "../DB/models/event.js";
 import { roleEnum } from "../DB/models/user.model.js";
+import mongoose from 'mongoose';
 
 // =================== Create ====================
 export const createEvent = asyncHandler(async (req, res, next) => {
@@ -24,12 +25,34 @@ export const createEvent = asyncHandler(async (req, res, next) => {
 
 // =================== Get All ====================
 export const getEvents = asyncHandler(async (req, res) => {
-  const events = await Event.find()
+  const { categoryId } = req.query;
+  console.log('categoryId from query:', categoryId);
+
+  let filter = {};
+
+  // ✅ فلترة حسب التصنيف إن وُجد
+  if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
+    filter.categoryId = new mongoose.Types.ObjectId(categoryId);
+  }
+
+  // ✅ فلترة الأحداث حسب نوع المستخدم
+  if (req.user?.role === roleEnum.user) {
+    filter.approved = true;
+  }
+
+  console.log('Final event filter:', filter);
+
+  const events = await Event.find(filter)
     .populate("categoryId", "name")
     .populate("venueId", "name")
     .populate("organizerId", "firstName lastName email");
+
   return successResponse({ res, data: { events } });
 });
+
+
+
+
 
 // =================== Get By Id ====================
 export const getEventById = asyncHandler(async (req, res, next) => {
