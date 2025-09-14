@@ -9,17 +9,27 @@ import { CartService } from '../../services/cart.service';
 export class CartComponent implements OnInit {
 
   cart: any = null;
-  userID: string = '68bed4eab1b5fdec11827ad2'; 
+  userID: string = '';
 
-  constructor(private cartService: CartService) { }
+  constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
+    this.extractUserID();
     this.loadCart();
+  }
+
+  // ✅ استخرج الـ userID من الـ token
+  extractUserID() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT
+      this.userID = payload.userID;
+    }
   }
 
   loadCart() {
     this.cartService.getCart(this.userID).subscribe(
-      (res) => this.cart = res,
+      (res) => this.cart = res.data.cart, 
       (err) => console.error(err)
     );
   }
@@ -38,11 +48,18 @@ export class CartComponent implements OnInit {
     );
   }
 
-  checkout() {
-    this.cartService.proceedToPayment(this.userID).subscribe(
-      (res) => alert('Payment processed successfully!'),
+  updateQuantity(eventID: string, newQuantity: number) {
+    this.cartService.updateQuantity({ userID: this.userID, eventID, quantity: newQuantity }).subscribe(
+      () => this.loadCart(),
       (err) => console.error(err)
     );
   }
 
+  checkout() {
+    this.cartService.proceedToPayment(this.userID).subscribe(
+      () => alert('Payment processed successfully!'),
+      (err) => console.error(err)
+    );
+  }
 }
+

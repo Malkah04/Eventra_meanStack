@@ -85,7 +85,7 @@
     <!-- Upcoming Events -->
     <div class="events-section">
       <div class="section-header">
-        <h2>Trending Events</h2>
+        <h2>Upcoming Events</h2>
         <a routerLink="/events" class="view-all-link">View All</a>
       </div>
 
@@ -99,7 +99,6 @@
             <img
               [src]="(event.images && event.images.length > 0) ? event.images[0] : 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg'"
               [alt]="event.name" loading="lazy">
-
             <div class="event-price">{{formatPrice(event.ticketPrice)}}</div>
           </div>
           <div class="event-content">
@@ -113,29 +112,29 @@
         </div>
       </div>
     </div>
-  </div>
 
-  <!-- Quick Actions -->
-  <div class="actions-section">
-    <div class="section-header">
-      <h2>Quick Actions</h2>
+
+    <!-- Quick Actions -->
+    <div class="actions-section">
+      <div class="section-header">
+        <h2>Quick Actions</h2>
+      </div>
+      <div class="action-buttons">
+        <a routerLink="/events" mat-raised-button color="primary">
+          <mat-icon>search</mat-icon>
+          Browse Events
+        </a>
+        <a routerLink="/venues" mat-outlined-button>
+          <mat-icon>location_city</mat-icon>
+          Find Venues
+        </a>
+        <a routerLink="/map" mat-outlined-button>
+          <mat-icon>map</mat-icon>
+          Explore Map
+        </a>
+        <a routerLink="/profile" mat-outlined-button>
+          <mat-icon>settings</mat-icon>
+          Edit Profile
+        </a>
+      </div>
     </div>
-    <div class="action-buttons">
-      <a routerLink="/events" mat-raised-button color="primary">
-        <mat-icon>search</mat-icon>
-        Browse Events
-      </a>
-      <a routerLink="/venues" mat-outlined-button>
-        <mat-icon>location_city</mat-icon>
-        Find Venues
-      </a>
-      <a routerLink="/map" mat-outlined-button>
-        <mat-icon>map</mat-icon>
-        Explore Map
-      </a>
-      <a routerLink="/profile" mat-outlined-button>
-        <mat-icon>settings</mat-icon>
-        Edit Profile
-      </a>
-    </div>
-  </div>

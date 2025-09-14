@@ -5,7 +5,14 @@ export const addToCart = {
     userID: Joi.string().required(),
     eventID: Joi.string().required(),
     quantity: Joi.number().min(1).required(),
-    price: Joi.number().min(0).required(),
+  }),
+};
+
+export const updateQuantity = {
+  body: Joi.object({
+    userID: Joi.string().required(),
+    eventID: Joi.string().required(),
+    quantity: Joi.number().min(1).required(),
   }),
 };
 
@@ -33,3 +40,4 @@ export const checkout = {
     userID: Joi.string().required(),
   }),
 };
+

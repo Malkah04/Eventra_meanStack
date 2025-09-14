@@ -61,12 +61,16 @@ export class DashboardComponent implements OnInit {
     next: (res: any) => {
       const allEvents: Event[] = res.data.events;
       const today = new Date();
+      today.setHours(0, 0, 0, 0); // نخلي المقارنة تبدأ من بداية اليوم
 
-      // فلترة الأحداث القادمة (تاريخها أكبر أو يساوي اليوم)
-      this.upcomingEvents = allEvents.filter((event: Event) => {
-        const eventDate = new Date(event.date);
-        return eventDate >= today;
-      });
+      // فلترة + ترتيب + اختيار أول 3
+      this.upcomingEvents = allEvents
+        .filter((event: Event) => {
+          const eventDate = new Date(event.date);
+          return eventDate >= today;
+        })
+        .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+        .slice(0, 3); // هنا عشان يعرض 3 أحداث بس
 
       this.isLoading = false;
     },
@@ -76,6 +80,7 @@ export class DashboardComponent implements OnInit {
     }
   });
 }
+
 
 
 

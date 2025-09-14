@@ -7,6 +7,9 @@ const eventSchema = new mongoose.Schema(
     ticketPrice: { type: Number, required: true, min: [0, "Price must be positive"] },
     date: { type: Date, required: true },
     time: { type: String, required: true },
+    image:{
+      type: [String],
+      default: []},
 
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
