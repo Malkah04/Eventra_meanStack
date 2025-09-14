@@ -34,5 +34,6 @@ export class CartService {
 
   // ✅ update quantity
   updateQuantity(data: { userID: string, eventID: string, quantity: number }): Observable<any> {
-    return this.h
-
+    return this.http.put(`${this.baseUrl}/update`, data, { headers: this.getAuthHeaders() });
+  }
+}

@@ -56,10 +56,10 @@ export class CartComponent implements OnInit {
   }
 
   checkout() {
-    this.cartService.proceedToPayment(this.userID).subscribe(
-      () => alert('Payment processed successfully!'),
-      (err) => console.error(err)
-    );
+    // this.cartService.proceedToPayment(this.userID).subscribe(
+    //   () => alert('Payment processed successfully!'),
+    //   (err:any) => console.error(err)
+    // );
   }
 }
 
