@@ -1,0 +1,60 @@
+<div class="venues-container">
+    <h2>Venues</h2>
+
+    <div class="filter-bar">
+        <label>Filter by Category:</label>
+        <select [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
+            <option value="">All</option>
+            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+        </select>
+    </div>
+
+    <button class="btn-create" *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'"
+        (click)="goToCreate()">
+        + Create Venue
+    </button>
+
+    <div *ngIf="loading" class="loading">Loading venues...</div>
+    <div *ngIf="!loading && venues.length === 0" class="no-data">No venues found.</div>
+
+    <div class="venue-list">
+        <div class="venue-card" *ngFor="let v of filteredVenues">
+            <img [src]="v.images?.[0]" alt="{{ v.name }}" class="venue-image" />
+
+            <div class="venue-content">
+                <h3 class="venue-title">{{ v.name }}</h3>
+                <p class="venue-description">{{ v.description }}</p>
+
+                <div class="venue-info">
+                    <p>
+                        <strong>📍 Location:</strong>
+                        <a [href]="'https://www.google.com/maps?q=' + v.location.x + ',' + v.location.y"
+                            target="_blank">
+                            View on Map
+                        </a>
+                    </p>
+                    <p><strong>👥 Capacity:</strong> {{ v.capacity }}</p>
+                    <p><strong>💰 Price:</strong> {{ v.pricePerHour }} $/hour</p>
+                    <div *ngIf="v.features?.length">
+                        <strong>✨ Features:</strong>
+                        <ul>
+                            <li *ngFor="let feature of v.features">{{ feature }}</li>
+                        </ul>
+                    </div>
+                    <p>
+                        <strong>🕒 Availability:</strong>
+                        {{ v.availability.openTime }} - {{ v.availability.closeTime }}
+                        ({{ v.availability.days.join(', ') }})
+                    </p>
+                </div>
+
+                <div class="venue-actions">
+                    <button (click)="goToDetails(v.id)">Details</button>
+                    <button *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'"
+                        (click)="goToEdit(v.id)">Edit</button>
+                    <button (click)="deleteVenue(v.id)">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

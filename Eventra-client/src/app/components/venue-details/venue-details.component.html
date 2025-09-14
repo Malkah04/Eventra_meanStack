@@ -1,0 +1,48 @@
+<div class="venue-details" *ngIf="venue; else loading">
+    <!-- Main Image -->
+    <div class="main-image">
+        <img *ngIf="venue.images.length > 0; else noImage" [src]="venue.images[0]" alt="Venue Image" />
+        <ng-template #noImage>
+            <div class="placeholder">No Image</div>
+        </ng-template>
+    </div>
+
+    <!-- Venue Info -->
+    <div class="venue-info">
+        <h2>{{ venue.name }}</h2>
+        <p class="category">Category: {{ categoryName }}</p>
+        <p class="description">{{ venue.description }}</p>
+
+        <!-- Location -->
+        <div class="location">
+            <strong>Location:</strong> Latitude: {{ venue.location.x }}, Longitude: {{ venue.location.y }}
+        </div>
+
+        <!-- Availability -->
+        <div class="availability">
+            <strong>Availability:</strong>
+            {{ venue.availability.openTime }} - {{ venue.availability.closeTime }},
+            Days: {{ venue.availability.days.join(', ') }}
+        </div>
+
+        <!-- Capacity -->
+        <div class="details">
+            <span><strong>Capacity:</strong> {{ venue.capacity }}</span>
+        </div>
+
+        <!-- Price -->
+        <div class="details">
+            <span><strong>Price per Hour:</strong> {{ venue.pricePerHour | currency:'EGP':'symbol' }}</span>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <strong>Features:</strong>
+            <span class="feature-tag" *ngFor="let feature of venue.features">{{ feature }}</span>
+        </div>
+    </div>
+</div>
+
+<ng-template #loading>
+    <p>Loading venue details...</p>
+</ng-template>
