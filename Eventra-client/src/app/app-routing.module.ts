@@ -17,6 +17,12 @@ import { EventDetailsComponent } from './components/event-details/event-details.
 import { EventEditComponent } from './components/event-edit/event-edit.component';
 import { EventsListComponent } from './components/event-list/event-list.component';
 
+// Venue Components
+import { VenueCreateComponent} from './components/venue-create/venue-create.component';
+import { VenueEditComponent } from './components/venue-edit/venue-edit.component';
+import { VenueListComponent } from './components/venue-list/venue-list.component';
+import { VenueDetailsComponent } from './components/venue-details/venue-details.component';
+
 
 //Category Components
 import { CategoryCreateComponent } from './components/category-create/category-create.component';
@@ -40,6 +46,12 @@ const routes: Routes = [
   { path: 'events/edit/:id', component: EventEditComponent },
   { path: 'events', component: EventsListComponent },
   { path: 'events/:id', component: EventDetailsComponent },
+
+  // Venue routes
+  { path: 'venues/create', component: VenueCreateComponent, canActivate: [AuthGuard] },
+  { path: 'venues/edit/:id', component: VenueEditComponent, canActivate: [AuthGuard] },
+  { path: 'venues', component: VenueListComponent, canActivate: [AuthGuard] },
+  { path: 'venues/:id', component: VenueDetailsComponent, canActivate: [AuthGuard] },
 
   // Category routes
   { path: 'categories/create', component: CategoryCreateComponent },

@@ -14,12 +14,21 @@ export const createVenue = asyncHandler(async (req, res, next) => {
 
 // =================== Get All ====================
 export const getAllVenues = asyncHandler(async (req, res) => {
+  if (req.query.categoryId) {
+    const venues = await Venue.find({ categoryId: req.query.categoryId });
+    return successResponse({ res, data: { venues } });
+  }
+
   const venues = await Venue.find();
   return successResponse({ res, data: { venues } });
 });
 
 // =================== Get By Owner ====================
 export const getVenuesByOwner = asyncHandler(async (req, res, next) => {
+  if (req.query.categoryId) {
+    const venues = await Venue.find({ ownerId: req.user._id, categoryId: req.query.categoryId });
+    return successResponse({ res, data: { venues } });
+  }
   const venues = await Venue.find({ ownerId: req.user._id });
   if (!venues.length) return next(new Error("No venues found", { cause: 404 }));
   return successResponse({ res, data: { venues } });
@@ -27,8 +36,9 @@ export const getVenuesByOwner = asyncHandler(async (req, res, next) => {
 
 // =================== Get By Id ====================
 export const getVenueById = asyncHandler(async (req, res, next) => {
-  const venue = await Venue.findById(req.params.id);
+  const venue = await Venue.findById(req.params.id).populate('categoryId', 'name');
   if (!venue) return next(new Error("Venue not found", { cause: 404 }));
+
   return successResponse({ res, data: { venue } });
 });
 

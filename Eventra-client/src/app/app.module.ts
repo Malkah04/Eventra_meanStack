@@ -64,6 +64,10 @@ import { CategoryEditComponent } from './components/category-edit/category-edit.
 import { CategoriesListComponent } from './components/category-list/category-list.component';
 import { VenuesListComponent } from './components/venues-list/venues-list.component';
 import { VenueComponent } from './venue/venue.component';
+import { VenueCreateComponent } from './components/venue-create/venue-create.component';
+import { VenueEditComponent } from './components/venue-edit/venue-edit.component';
+import { VenueDetailsComponent } from './components/venue-details/venue-details.component';
+import { VenueListComponent } from './components/venue-list/venue-list.component';
 
 @NgModule({
   declarations: [
@@ -89,7 +93,11 @@ import { VenueComponent } from './venue/venue.component';
     CategoryEditComponent,
     CategoriesListComponent,
     VenuesListComponent,
-    VenueComponent
+    VenueComponent,
+    VenueCreateComponent,
+    VenueEditComponent,
+    VenueDetailsComponent,
+    VenueListComponent,
   ],
   imports: [
     BrowserModule,

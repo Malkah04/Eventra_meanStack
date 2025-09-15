@@ -1,0 +1,96 @@
+<div class="venue-edit">
+    <h2>Edit Venue</h2>
+
+    <!-- Main Image Preview -->
+    <div class="main-image">
+        <img *ngIf="venue.images.length > 0; else noImage" [src]="venue.images[0]" alt="Venue Image" />
+        <ng-template #noImage>
+            <div class="placeholder">No Image</div>
+        </ng-template>
+
+        <label class="upload-btn">
+            Change Image
+            <input type="file" (change)="onMainImageSelected($event)" hidden />
+        </label>
+    </div>
+    <form (ngSubmit)="saveVenue()" #venueForm="ngForm">
+        <!-- Name -->
+        <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" id="name" [(ngModel)]="venue.name" name="name" required />
+        </div>
+
+        <!-- Description -->
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" [(ngModel)]="venue.description" name="description" rows="3"></textarea>
+        </div>
+
+        <!-- Category -->
+        <label for="category">Category</label>
+        <select [(ngModel)]="venue.categoryId" name="categoryId" required>
+            <option *ngFor="let cat of categories" [value]="cat.id">
+                {{ cat.name }}
+            </option>
+        </select>
+
+        <!-- Location -->
+        <div class="form-group">
+            <label>Location</label>
+            <div class="location-inputs">
+                <input type="number" step="0.0001" placeholder="Latitude (x)" [(ngModel)]="venue.location.x"
+                    name="locationX" />
+                <input type="number" step="0.0001" placeholder="Longitude (y)" [(ngModel)]="venue.location.y"
+                    name="locationY" />
+            </div>
+        </div>
+
+        <!-- Availability -->
+        <div class="form-group">
+            <label>Availability</label>
+            <div class="availability">
+                <label>Open Time</label>
+                <input type="time" [(ngModel)]="venue.availability.openTime" name="openTime" />
+
+                <label>Close Time</label>
+                <input type="time" [(ngModel)]="venue.availability.closeTime" name="closeTime" />
+
+                <label>Days</label>
+                <div class="days">
+                    <div *ngFor="let day of allDays">
+                        <input type="checkbox" [value]="day" [checked]="venue.availability.days.includes(day)"
+                            (change)="toggleDay(day, $event)" />
+                        {{ day }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Capacity -->
+        <div class="form-group">
+            <label for="capacity">Capacity</label>
+            <input type="number" id="capacity" [(ngModel)]="venue.capacity" name="capacity" />
+        </div>
+
+        <!-- Price Per Hour -->
+        <div class="form-group">
+            <label for="price">Price per Hour</label>
+            <input type="number" id="price" [(ngModel)]="venue.pricePerHour" name="pricePerHour" />
+        </div>
+
+        <!-- Features -->
+        <div class="form-group">
+            <label>Features</label>
+            <input type="text" name="featureInput" [(ngModel)]="featureInput" (keydown.enter)="addFeature($event)" />
+
+            <div class="features-container">
+                <span class="feature-tag" *ngFor="let feature of venue.features; let i = index">
+                    {{ feature }}
+                    <button type="button" (click)="removeFeature(i)">×</button>
+                </span>
+            </div>
+        </div>
+        <!-- Submit -->
+        <button type="submit" [disabled]="venueForm.invalid">💾 Save</button>
+    </form>
+</div>
