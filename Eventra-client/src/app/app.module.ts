@@ -18,7 +18,6 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 
-
 // Social Login
 import {
   SocialLoginModule,
@@ -106,7 +105,20 @@ import { VenueListComponent } from './components/venue-list/venue-list.component
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    SocialLoginModule
+    // SocialLoginModule,
+    MatIconModule,
+    MatFormFieldModule,
+    MatMenuModule,
+    MatToolbarModule,
+    MatButtonModule,
+    MatInputModule,
+    MatCardModule,
+    MatSelectModule,
+    MatProgressSpinnerModule,
+    MatDividerModule,
+    MatChipsModule,
+    MatTableModule,
+    MatPaginatorModule,
   ],
   providers: [
     AuthService,
