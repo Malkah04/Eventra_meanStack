@@ -26,8 +26,21 @@ const getAllItemByOrg = asyncHandler(async (req, res) => {
 });
 
 const calcPrice = (start, end, pricePerHour) => {
-  const diffMs = end - start;
-  return diffMs * pricePerHour;
+  const [startHour, startMinute] = start.split(":").map(Number);
+  const [endHour, endMinute] = end.split(":").map(Number);
+
+  let startTotalMinutes = startHour * 60 + startMinute;
+  let endTotalMinutes = endHour * 60 + endMinute;
+
+  // If end time is less than or equal to start, assume it's on the next day
+  if (endTotalMinutes <= startTotalMinutes) {
+    endTotalMinutes += 24 * 60;
+  }
+
+  const diffMinutes = endTotalMinutes - startTotalMinutes;
+  const diffHours = diffMinutes / 60;
+
+  return diffHours * pricePerHour;
 };
 
 const addItemToCart = asyncHandler(async (req, res) => {
@@ -63,8 +76,8 @@ const addItemToCart = asyncHandler(async (req, res) => {
           venueId,
           totalPrice: lastPrice,
           status: "pending",
-          startTime: start,
-          endTime: end,
+          start,
+          end,
         },
       ],
     });
@@ -84,8 +97,8 @@ const addItemToCart = asyncHandler(async (req, res) => {
       venueId,
       totalPrice: lastPrice,
       status: "pending",
-      startTime: start,
-      endTime: end,
+      start,
+      end,
     });
     totalPrice = cart.item.reduce((sum, it) => sum + (it.totalPrice || 0), 0);
   }

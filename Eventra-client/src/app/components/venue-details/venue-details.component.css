@@ -70,3 +70,12 @@
   border-radius: 5px;
   font-size: 0.9rem;
 }
+
+
+.con{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+

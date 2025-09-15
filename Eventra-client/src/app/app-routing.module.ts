@@ -10,19 +10,17 @@ import { ConfirmEmailComponent } from './components/confirm-email/confirm-email.
 import { ForgotPasswordComponent } from './components/forgot-password/forgot-password.component';
 import { ResetPasswordComponent } from './components/reset-password/reset-password.component';
 
-
 //Event Components
-import { EventCreateComponent} from './components/event-create/event-create.component';
+import { EventCreateComponent } from './components/event-create/event-create.component';
 import { EventDetailsComponent } from './components/event-details/event-details.component';
 import { EventEditComponent } from './components/event-edit/event-edit.component';
 import { EventsListComponent } from './components/event-list/event-list.component';
 
 // Venue Components
-import { VenueCreateComponent} from './components/venue-create/venue-create.component';
+import { VenueCreateComponent } from './components/venue-create/venue-create.component';
 import { VenueEditComponent } from './components/venue-edit/venue-edit.component';
 import { VenueListComponent } from './components/venue-list/venue-list.component';
 import { VenueDetailsComponent } from './components/venue-details/venue-details.component';
-
 
 //Category Components
 import { CategoryCreateComponent } from './components/category-create/category-create.component';
@@ -31,6 +29,7 @@ import { CategoriesListComponent } from './components/category-list/category-lis
 // App Components
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { MapComponent } from './components/map/map.component';
+import { OrganizerCartComponent } from './components/organizer-cart/organizer-cart.component';
 const routes: Routes = [
   // Default: go to login
   { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -48,66 +47,79 @@ const routes: Routes = [
   { path: 'events/:id', component: EventDetailsComponent },
 
   // Venue routes
-  { path: 'venues/create', component: VenueCreateComponent, canActivate: [AuthGuard] },
-  { path: 'venues/edit/:id', component: VenueEditComponent, canActivate: [AuthGuard] },
+  {
+    path: 'venues/create',
+    component: VenueCreateComponent,
+    canActivate: [AuthGuard],
+  },
+  {
+    path: 'venues/edit/:id',
+    component: VenueEditComponent,
+    canActivate: [AuthGuard],
+  },
   { path: 'venues', component: VenueListComponent, canActivate: [AuthGuard] },
-  { path: 'venues/:id', component: VenueDetailsComponent, canActivate: [AuthGuard] },
+  {
+    path: 'venues/:id',
+    component: VenueDetailsComponent,
+    canActivate: [AuthGuard],
+  },
 
   // Category routes
   { path: 'categories/create', component: CategoryCreateComponent },
   { path: 'categories/edit/:id', component: CategoryEditComponent },
-  { path: 'categories', component: CategoriesListComponent},
+  { path: 'categories', component: CategoriesListComponent },
+  { path: 'orgcart', component: OrganizerCartComponent },
 
   // Protected routes (any authenticated user)
-  { path: 'dashboard', component: DashboardComponent, canActivate: [AuthGuard] },
+  {
+    path: 'dashboard',
+    component: DashboardComponent,
+    canActivate: [AuthGuard],
+  },
 
   // Admin-only
   {
     path: 'admin/dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['admin'] }
+    data: { roles: ['admin'] },
   },
   {
-  path: 'admin/categories',
-  children: [
-    { path: '', component: CategoriesListComponent },
-    { path: 'create', component: CategoryCreateComponent },
-    { path: 'edit/:id', component: CategoryEditComponent },
-  ],
-},
-
+    path: 'admin/categories',
+    children: [
+      { path: '', component: CategoriesListComponent },
+      { path: 'create', component: CategoryCreateComponent },
+      { path: 'edit/:id', component: CategoryEditComponent },
+    ],
+  },
 
   // Organizer-only
   {
     path: 'organizer/dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['organizer'] }
+    data: { roles: ['organizer'] },
   },
   {
-  path: 'organizer/events/edit/:id',
-  component: EventEditComponent
+    path: 'organizer/events/edit/:id',
+    component: EventEditComponent,
   },
   {
-  path: 'organizer/events/create',
-  component: EventCreateComponent,
-  canActivate: [AuthGuard, RoleGuard],
-  data: { roles: ['organizer'] }
-},
-
-
+    path: 'organizer/events/create',
+    component: EventCreateComponent,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['organizer'] },
+  },
 
   // Public routes
   { path: 'map', component: MapComponent },
 
   // Catch-all → go to login
-  { path: '**', redirectTo: '/login' }
+  { path: '**', redirectTo: '/login' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule {}
-

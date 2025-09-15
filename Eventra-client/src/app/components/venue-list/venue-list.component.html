@@ -52,7 +52,7 @@
                     <button (click)="goToDetails(v.id)">Details</button>
                     <button *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'"
                         (click)="goToEdit(v.id)">Edit</button>
-                    <button (click)="deleteVenue(v.id)">Delete</button>
+                    <button *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'" (click)="deleteVenue(v.id)">Delete</button>
                 </div>
             </div>
         </div>

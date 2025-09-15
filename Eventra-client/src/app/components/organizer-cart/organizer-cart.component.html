@@ -1,13 +1,29 @@
-<h1>Cart</h1>
- <button (click)="deleteCart()" >empty the cart</button>
-<ul>
-  <li *ngFor="let c of cart">
-    {{c.startTime}}pm -{{c.endTime}}pm
-    {{c.venueId}}
-    <p>${{c.totalPrice}}</p>
-    <button (click)="deleteItem(c.eventId ,c.venueId)" > delete </button>
+<ul class="cart-list">
+  <li *ngFor="let c of cart" class="cart-item">
+    <div class="cart-info" [routerLink]="['/venues', c.venueId]">
+      <div class="cart-image" *ngIf="c.venue">
+        <img
+          *ngIf="c.venue.images && c.venue.images.length > 0"
+          [src]="c.venue.images[0]"
+          alt="{{ c.venue.name }}"
+        />
+      </div>
+      <div class="cart-details">
+        <h3>{{ c.venue?.name }}</h3>
+        <p>{{ c.start }}pm - {{ c.end }}pm</p>
+        <p class="price">${{ c.totalPrice }}</p>
+      </div>
+    </div>
 
+    <span 
+      class="material-symbols-outlined delete-btn" 
+      (click)="deleteItem(c.eventId, c.venueId); $event.stopPropagation()">
+      delete
+    </span>
   </li>
 </ul>
 
-<p>Total Price: {{ totalPrice }}</p>
+<div class="cart-footer">
+  <p class="total">Total Price: {{ totalPrice }}</p>
+  <button (click)="deleteCart()" class="empty-btn">Empty the cart</button>
+</div>

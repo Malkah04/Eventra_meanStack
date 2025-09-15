@@ -16,29 +16,29 @@ const router = express.Router();
 
 router.get(
   "/:id",
-  // authentication(),
-  // authorization([roleEnum.organizer, roleEnum.admin]),
+  authentication(),
+  authorization([roleEnum.organizer, roleEnum.admin]),
   validation(orgCartValidation.getByOrgId),
   getAllItemByOrg
 );
 router.post(
   "/",
-  // authentication(),
-  // authorization([roleEnum.organizer, roleEnum.admin]),
+  authentication(),
+  authorization([roleEnum.organizer, roleEnum.admin]),
   validation(orgCartValidation.create),
   addItemToCart
 );
 router.delete(
   "/:id",
-  // authentication(),
-  // authorization([roleEnum.organizer, roleEnum.admin]),
+  authentication(),
+  authorization([roleEnum.organizer, roleEnum.admin]),
   validation(orgCartValidation.deleteCart),
   deleteCart
 );
 router.delete(
   "/",
-  // authentication(),
-  // authorization([roleEnum.organizer, roleEnum.admin]),
+  authentication(),
+  authorization([roleEnum.organizer, roleEnum.admin]),
   validation(orgCartValidation.deleteItemInCart),
   deleteItemFromCart
 );

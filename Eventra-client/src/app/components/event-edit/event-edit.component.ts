@@ -6,7 +6,7 @@ import { EventService } from 'src/app/services/event.service';
 import { CategoryService } from 'src/app/services/category.service';
 import { VenueService } from 'src/app/services/venue.service';
 
-import { Event } from 'src/app/models/models/event.model'
+import { Event } from 'src/app/models/models/event.model';
 import { Category } from 'src/app/models/models/category.model';
 import { Venue } from 'src/app/models/models/venue.model';
 
@@ -34,7 +34,9 @@ export class EventEditComponent implements OnInit {
 
     // تحميل الفئات والأماكن
     this.categoryService.getAll().subscribe((cats) => (this.categories = cats));
-    this.venueService.getMyVenues().subscribe((venues) => (this.venues = venues));
+    this.venueService
+      .getMyVenues()
+      .subscribe((venues) => (this.venues = venues));
 
     // تحميل بيانات الحدث
     this.eventService.getEventById(this.eventId).subscribe((eventData) => {
@@ -52,9 +54,11 @@ export class EventEditComponent implements OnInit {
 
   onSubmit() {
     if (this.eventForm.valid) {
-      this.eventService.updateEvent(this.eventId, this.eventForm.value).subscribe(() => {
-        this.router.navigate(['/organizer/events']);
-      });
+      this.eventService
+        .updateEvent(this.eventId, this.eventForm.value)
+        .subscribe(() => {
+          this.router.navigate(['/organizer/events']);
+        });
     }
   }
 }
