@@ -7,59 +7,43 @@ import { CartService } from '../../services/cart.service';
   styleUrls: ['./cart.component.css']
 })
 export class CartComponent implements OnInit {
-
-  cart: any = null;
-  userID: string = '';
+  cart: any = { items: [] };
+  userID = "123"; // ✨ هنا هتجيبيه من AuthService أو localStorage
 
   constructor(private cartService: CartService) {}
 
   ngOnInit(): void {
-    this.extractUserID();
-    this.loadCart();
+    this.getCart();
   }
 
-  // ✅ استخرج الـ userID من الـ token
-  extractUserID() {
-    const token = localStorage.getItem('token');
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1])); // decode JWT
-      this.userID = payload.userID;
-    }
+  getCart(): void {
+    this.cartService.getCart(this.userID).subscribe((res: any) => {
+      this.cart = res.data || { items: [] };
+    });
   }
 
-  loadCart() {
-    this.cartService.getCart(this.userID).subscribe(
-      (res) => this.cart = res.data.cart, 
-      (err) => console.error(err)
-    );
+  removeItem(eventID: string): void {
+    this.cartService.removeFromCart({ userID: this.userID, eventID }).subscribe(() => {
+      this.getCart();
+    });
   }
 
-  removeItem(eventID: string) {
-    this.cartService.removeFromCart({ userID: this.userID, eventID }).subscribe(
-      () => this.loadCart(),
-      (err) => console.error(err)
-    );
+  updateQuantity(eventID: string, quantity: number): void {
+    this.cartService.updateQuantity({ userID: this.userID, eventID, quantity }).subscribe(() => {
+      this.getCart();
+    });
   }
 
-  emptyCart() {
-    this.cartService.emptyCart(this.userID).subscribe(
-      () => this.loadCart(),
-      (err) => console.error(err)
-    );
+  emptyCart(): void {
+    this.cartService.emptyCart({ userID: this.userID }).subscribe(() => {
+      this.getCart();
+    });
   }
 
-  updateQuantity(eventID: string, newQuantity: number) {
-    this.cartService.updateQuantity({ userID: this.userID, eventID, quantity: newQuantity }).subscribe(
-      () => this.loadCart(),
-      (err) => console.error(err)
-    );
-  }
-
-  checkout() {
-    this.cartService.proceedToPayment(this.userID).subscribe(
-      () => alert('Payment processed successfully!'),
-      (err) => console.error(err)
-    );
+  checkout(): void {
+    this.cartService.checkout({ userID: this.userID }).subscribe(() => {
+      alert("Checkout successful ✅");
+      this.getCart();
+    });
   }
 }
-

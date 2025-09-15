@@ -1,38 +1,36 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CartService {
-  private baseUrl = 'http://localhost:5000/api/cart';
+  private apiUrl = 'http://localhost:5000/api/cart'; // ✨ غيّري البورت لو backend عندك مختلف
 
   constructor(private http: HttpClient) {}
 
-  private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
-    return new HttpHeaders({ 'Authorization': `Bearer ${token}` });
-  }
-
   getCart(userID: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/${userID}`, { headers: this.getAuthHeaders() });
+    return this.http.get(`${this.apiUrl}/${userID}`);
   }
 
-  // ❌ price اتشال هنا — الـ backend بيجيبه من DB
-  addToCart(data: { userID: string, eventID: string, quantity: number }): Observable<any> {
-    return this.http.post(`${this.baseUrl}/add`, data, { headers: this.getAuthHeaders() });
+  addToCart(payload: { userID: string; eventID: string; quantity: number; price: number }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add`, payload);
   }
 
-  removeFromCart(data: { userID: string, eventID: string }): Observable<any> {
-    return this.http.request('delete', `${this.baseUrl}/remove`, { body: data, headers: this.getAuthHeaders() });
+  updateQuantity(payload: { userID: string; eventID: string; quantity: number }): Observable<any> {
+    return this.http.put(`${this.apiUrl}/update`, payload);
   }
 
-  emptyCart(userID: string): Observable<any> {
-    return this.http.request('delete', `${this.baseUrl}/empty`, { body: { userID }, headers: this.getAuthHeaders() });
+  removeFromCart(payload: { userID: string; eventID: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/remove`, payload);
   }
 
-  // ✅ update quantity
-  updateQuantity(data: { userID: string, eventID: string, quantity: number }): Observable<any> {
-    return this.h
+  emptyCart(payload: { userID: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/empty`, payload);
+  }
 
+  checkout(payload: { userID: string }): Observable<any> {
+    return this.http.post(`${this.apiUrl}/checkout`, payload);
+  }
+}

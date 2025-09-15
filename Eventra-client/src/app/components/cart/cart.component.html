@@ -1,18 +1,45 @@
-<div class="cart-container" *ngIf="cart && cart.items.length > 0; else emptyCartTemplate">
-  <h2>Your Cart</h2>
-  <ul>
-    <li *ngFor="let item of cart.items">
-      <span>{{ item.eventID.name }} ({{ item.quantity }} x ${{ item.price }})</span>
-      <button (click)="removeItem(item.eventID._id)">Remove</button>
-    </li>
-  </ul>
+<div class="container mt-5">
+  <h2 class="mb-4">🛒 My Cart</h2>
 
-  <h3>Total: ${{ cart.totalAmount }}</h3>
+  <div *ngIf="cart.items.length === 0" class="alert alert-info">
+    Your cart is empty.
+  </div>
 
-  <button (click)="emptyCart()">Empty Cart</button>
-  <button (click)="checkout()">Proceed to Payment</button>
+  <table *ngIf="cart.items.length > 0" class="table table-bordered table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Event</th>
+        <th>Quantity</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of cart.items">
+        <td>{{ item.eventID.name || 'Event' }}</td>
+        <td>
+          <input
+            type="number"
+            [(ngModel)]="item.quantity"
+            (change)="updateQuantity(item.eventID._id || item.eventID, item.quantity)"
+            min="1"
+            class="form-control w-50"
+          />
+        </td>
+        <td>{{ item.price | currency }}</td>
+        <td>{{ item.price * item.quantity | currency }}</td>
+        <td>
+          <button class="btn btn-danger btn-sm" (click)="removeItem(item.eventID._id || item.eventID)">
+            Remove
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="cart.items.length > 0" class="d-flex justify-content-between mt-3">
+    <button class="btn btn-warning" (click)="emptyCart()">Empty Cart</button>
+    <button class="btn btn-success" (click)="checkout()">Checkout</button>
+  </div>
 </div>
-
-<ng-template #emptyCartTemplate>
-  <p>Your cart is empty.</p>
-</ng-template>

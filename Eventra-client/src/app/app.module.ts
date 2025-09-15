@@ -1,18 +1,9 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { MatTableModule } from '@angular/material/table';
-import { MatPaginatorModule } from '@angular/material/paginator';
-// Social Login
-import {
-  SocialLoginModule,
-  SocialAuthServiceConfig,
-} from '@abacritt/angularx-social-login';
-import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
-
-// Angular Material Modules
+// ✅ Angular Material imports (كاملة)
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
@@ -24,6 +15,16 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatTableModule } from '@angular/material/table';
+import { MatPaginatorModule } from '@angular/material/paginator';
+
+
+// Social Login
+import {
+  SocialLoginModule,
+  SocialAuthServiceConfig,
+} from '@abacritt/angularx-social-login';
+import { GoogleLoginProvider } from '@abacritt/angularx-social-login';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -54,7 +55,6 @@ import { ErrorMessageComponent } from './components/error-message/error-message.
 import { SpinnerComponent } from './components/spinner/spinner.component';
 import { OrganizerCartComponent } from './components/organizer-cart/organizer-cart.component';
 import { CartComponent } from './components/cart/cart.component';
-
 import { EventCreateComponent } from './components/event-create/event-create.component';
 import { EventDetailsComponent } from './components/event-details/event-details.component';
 import { EventEditComponent } from './components/event-edit/event-edit.component';
@@ -63,14 +63,7 @@ import { CategoryCreateComponent } from './components/category-create/category-c
 import { CategoryEditComponent } from './components/category-edit/category-edit.component';
 import { CategoriesListComponent } from './components/category-list/category-list.component';
 import { VenuesListComponent } from './components/venues-list/venues-list.component';
-
 import { VenueComponent } from './venue/venue.component';
-
-// @NgModule({
-//   declarations: [AppComponent, OrganizerCartComponent, EventComponent, CategoryComponent, CartComponent, VenueComponent],
-//   imports: [BrowserModule,FormsModule, AppRoutingModule, HttpClientModule],
-//   providers: [],
-//   bootstrap: [AppComponent],
 
 @NgModule({
   declarations: [
@@ -96,6 +89,7 @@ import { VenueComponent } from './venue/venue.component';
     CategoryEditComponent,
     CategoriesListComponent,
     VenuesListComponent,
+    VenueComponent
   ],
   imports: [
     BrowserModule,
@@ -104,22 +98,7 @@ import { VenueComponent } from './venue/venue.component';
     HttpClientModule,
     ReactiveFormsModule,
     FormsModule,
-    SocialLoginModule,
-
-    // Material Modules
-    MatToolbarModule,
-    MatButtonModule,
-    MatIconModule,
-    MatMenuModule,
-    MatCardModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatSelectModule,
-    MatProgressSpinnerModule,
-    MatDividerModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatChipsModule,
+    SocialLoginModule
   ],
   providers: [
     AuthService,

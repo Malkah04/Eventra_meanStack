@@ -27,12 +27,7 @@ router.delete(
   cartController.removeFromCart
 );
 
-router.delete(
-  "/empty",
-  authentication(),
-  validation(validators.emptyCart),
-  cartController.emptyCart
-);
+router.post("/remove", authentication(), validation(validators.removeFromCart), cartController.removeFromCart);
 
 router.get(
   "/:userID",
