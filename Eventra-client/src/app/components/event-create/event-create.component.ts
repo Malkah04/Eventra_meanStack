@@ -1,19 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EventService } from 'src/app/services/event.service';
 import { CategoryService } from 'src/app/services/category.service';
 import { VenueService } from 'src/app/services/venue.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-event-create',
-  templateUrl: './event-create.component.html'
+  templateUrl: './event-create.component.html',
+  styleUrls: ['./event-create.component.css']
 })
 export class EventCreateComponent implements OnInit {
   eventForm!: FormGroup;
   categories: any[] = [];
   venues: any[] = [];
-
+  isLoading = false;
+  selectedCategoryId: string = '';
+  selectedVenueId: string = '';
   constructor(
     private fb: FormBuilder,
     private eventService: EventService,
@@ -22,7 +25,7 @@ export class EventCreateComponent implements OnInit {
     private router: Router
   ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.eventForm = this.fb.group({
       name: ['', Validators.required],
       description: [''],
@@ -38,28 +41,41 @@ export class EventCreateComponent implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService.getAll().subscribe((res: any) => {
-  this.categories = res;
-});
-
+    this.categoryService.getAll().subscribe({
+      next: (res: any) => this.categories = res,
+      error: (err) => console.error('Error loading categories:', err)
+    });
   }
 
   loadVenues() {
-    this.venueService.getMyVenues().subscribe((res: any[]) => {
-      this.venues = res;
+    this.venueService.getMyVenues().subscribe({
+      next: (res: any) => {
+        // لو الريسبونس فيه data.venues
+        this.venues = res?.data?.venues || res;
+      },
+      error: (err) => console.error('Error loading venues:', err)
     });
   }
-  goToCreateEvent() {
-  this.router.navigate(['/events/create']);
+onCategoryChange(): void {
+    console.log('Selected Category:', this.selectedCategoryId);
 }
 
   onSubmit() {
-    if (this.eventForm.valid) {
-      this.eventService.createEvent(this.eventForm.value).subscribe(() => {
-        alert('Event Created Successfully!');
-        this.router.navigate(['/organizer/events']);
+    if (this.eventForm.invalid) return;
 
-      });
-    }
+    this.isLoading = true;
+    this.eventService.createEvent(this.eventForm.value).subscribe({
+      next: () => {
+        alert('✅ Event created successfully!');
+        this.router.navigate(['/organizer/events']);
+      },
+      error: (err) => {
+        console.error('Error creating event:', err);
+        alert('❌ Failed to create event');
+      },
+      complete: () => {
+        this.isLoading = false;
+      }
+    });
   }
 }

@@ -18,6 +18,7 @@ export class EventsListComponent implements OnInit {
   selectedCategoryId: string = '';
   loading = false;
   currentUserRole= '';
+  filteredEvents: any[] = [];
   constructor(private eventService: EventService,private categoryService: CategoryService, private router: Router,private authService: AuthService) {
   this.router.events.pipe(
   filter((event: RouterEvent) => event instanceof NavigationEnd)
@@ -49,14 +50,27 @@ formatDate(dateString: string): string {
     });
   }
   loadEvents(categoryId?: string) {
-  console.log('Selected Category ID:', categoryId);
+  console.log('currentUserRole:', this.currentUserRole);
   this.loading = true;
-  this.eventService.getEvents(1, 100, categoryId).subscribe((res: any) => {
-    console.log('API response:', res);
-    this.events = res.data.events;
-    this.loading = false;
-  });
+
+  if (this.currentUserRole === 'organizer') {
+    this.eventService.getMyEvents().subscribe((res: any) => {
+      this.events = res.data.events;
+      this.filteredEvents = this.events;
+      this.loading = false;
+    });
+  } else {
+    if (this.currentUserRole === '') {
+      return;
+    }
+    this.eventService.getEvents(1, 100, categoryId).subscribe((res: any) => {
+      this.events = res.data.events;
+      this.filteredEvents = this.events;
+      this.loading = false;
+    });
+  }
 }
+
 
  onCategoryChange() {
   console.log('Category changed:', this.selectedCategoryId);

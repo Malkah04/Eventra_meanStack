@@ -31,6 +31,9 @@ router.get(
   eventController.getEventById
 );
 
+// upcoming events - لا يحتاج authentication
+router.get("/upcoming", eventController.getUpcomingEvents);
+
 // Update event (Organizer فقط + لازم يبقى هو اللي عمل الإيفنت)
 router.patch(
   "/:id",
@@ -47,6 +50,14 @@ router.delete(
   authorization([roleEnum.organizer, roleEnum.admin]),
   validation(eventValidation.delete),
   eventController.deleteEvent
+);
+
+// Organizer only - Get events created by the logged-in organizer
+router.get(
+  "/my-events",
+  authentication(),
+  authorization([roleEnum.organizer]),
+  eventController.getMyEvents
 );
 
 router.get("/search/:searchItem", eventController.search);

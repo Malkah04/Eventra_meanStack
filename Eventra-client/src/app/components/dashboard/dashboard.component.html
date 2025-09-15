@@ -82,36 +82,38 @@
       </div>
     </div>
 
-    <!-- Upcoming Events -->
-    <div class="events-section">
-      <div class="section-header">
-        <h2>Upcoming Events</h2>
-        <a routerLink="/events" class="view-all-link">View All</a>
-      </div>
+   <!-- Upcoming Events -->
+<div class="events-section">
+  <div class="section-header">
+    <h2>Upcoming Events</h2>
+    <a routerLink="/events" class="view-all-link">View All</a>
+  </div>
 
-      <div class="loading-spinner" *ngIf="isLoading">
-        <mat-spinner diameter="40"></mat-spinner>
+  <div class="events-grid" *ngIf="!isLoading">
+    <div class="event-card" *ngFor="let event of upcomingEvents">
+      <div class="event-image">
+        <img
+          [src]="(event.images && event.images.length > 0) ? event.images[0] : 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg'"
+          [alt]="event.name"
+          loading="lazy"
+        >
+        <div class="event-price">{{formatPrice(event.ticketPrice)}}</div>
       </div>
-
-      <div class="events-grid" *ngIf="!isLoading">
-        <div class="event-card" *ngFor="let event of upcomingEvents">
-          <div class="event-image">
-            <img
-              [src]="(event.images && event.images.length > 0) ? event.images[0] : 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg'"
-              [alt]="event.name" loading="lazy">
-            <div class="event-price">{{formatPrice(event.ticketPrice)}}</div>
-          </div>
-          <div class="event-content">
-            <h4>{{event.name}}</h4>
-            <p class="event-date">
-              <mat-icon>event</mat-icon>
-              {{formatDate(event.date)}}
-            </p>
-            <button mat-button color="primary" class="book-btn">Book Now</button>
-          </div>
-        </div>
+      <div class="event-content">
+        <h4>{{event.name}}</h4>
+        <p class="event-date">
+          <mat-icon>event</mat-icon>
+          {{formatDate(event.date)}}
+        </p>
+        <p>
+          <strong>Venue:</strong>
+          <a [routerLink]="['/venues', event.venueId?._id]">{{event.venueId?.name}}</a>
+        </p>
+        <button mat-button color="primary" class="book-btn">Book Now</button>
       </div>
     </div>
+  </div>
+</div>
 
 
     <!-- Quick Actions -->

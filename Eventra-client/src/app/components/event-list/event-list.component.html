@@ -18,11 +18,13 @@
     <p><strong>Venue:</strong> {{ event.venueId?.name }}</p>
     <p><strong>Price:</strong> {{ event.ticketPrice }} EGP</p>
     <p><strong>Date:</strong> {{ formatDate(event.date) }} - {{ event.time }}</p>
-
+<p>
+          <strong>Venue:</strong>
+          <a [routerLink]="['/venues', event.venueId?._id]">{{event.venueId?.name}}</a>
+        </p>
 
     <button *ngIf="currentUserRole !== 'user'" (click)="goToEdit(event._id)">Edit</button>
     <button *ngIf="currentUserRole !== 'user'" (click)="deleteEvent(event._id)">Delete</button>
     <button (click)="goToDetails(event._id)">Details</button>
   </div>
 </div>
-
