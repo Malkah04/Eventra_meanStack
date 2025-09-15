@@ -7,8 +7,8 @@ export const orgCartValidation = {
       organizerId: generalFields.id.required(),
       venueId: generalFields.id.optional(),
       eventId: generalFields.id.optional(),
-      start: Joi.number().min(0).max(23).required(),
-      end: Joi.number().min(0).max(23).required(),
+      start: Joi.string().required(),
+      end: Joi.string().required(),
     }),
   },
   getByOrgId: {

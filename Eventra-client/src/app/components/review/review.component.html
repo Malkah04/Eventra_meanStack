@@ -1,0 +1,43 @@
+<div class="comments-section">
+   <div style="display: flex; justify-content: space-between;" *ngFor="let c of comments" class="comment">
+    <div>
+      <h2>{{ currentUser?.firstName }} {{ currentUser?.lastName }}</h2>
+      <p class="comment-text" *ngIf="!isEdit[c._id]">{{ c.comment }}</p>
+      <input *ngIf="isEdit[c._id]" type="text" [(ngModel)]="upcomment[c._id]" placeholder="Edit your comment" />
+     </div> 
+     <div *ngIf="c.userId === currentUser?._id">  
+      <span style="cursor: pointer;" (click)="deleteComment(c._id)" class="material-symbols-outlined">delete</span> 
+      <span style="cursor: pointer;" *ngIf="!isEdit[c._id]" (click)="toggleEdit(c._id, c.comment)" class="material-symbols-outlined" > edit </span>  
+      <div *ngIf="isEdit[c._id]" style="margin-top: 5px; gap: 10; display: flex;">
+        <button class="s" (click)="updateComment(c._id)">Save</button> 
+        <button class="c" (click)="cancelEdit(c._id)">Cancel</button> 
+      </div> 
+    </div> 
+  </div> 
+  <div class="add-comment"> <div class="left"> <input type="text" placeholder="Write a comment..." [(ngModel)]="comment" /> 
+  </div> <div class="right"> 
+    <button (click)="addComment()">Add</button> 
+  </div> 
+</div> 
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--   <span style="cursor: pointer;" (click)="deleteComment(c._id)" class="material-symbols-outlined">delete</span> 
+      <span style="cursor: pointer;" *ngIf="!isEdit[c._id]" (click)="toggleEdit(c._id, c.comment)" class="material-symbols-outlined" > edit </span>   -->

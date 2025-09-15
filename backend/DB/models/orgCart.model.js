@@ -17,13 +17,13 @@ const orgCartSchema = new mongoose.Schema(
           type: mongoose.Schema.Types.ObjectId,
           ref: "Venue",
         },
-        startTime: {
+        start: {
           type: String,
-          required: true,
+          // required: true,
         },
-        endTime: {
+        end: {
           type: String,
-          required: true,
+          // required: true,
         },
         totalPrice: {
           type: Number,

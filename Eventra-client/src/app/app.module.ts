@@ -67,6 +67,7 @@ import { VenueCreateComponent } from './components/venue-create/venue-create.com
 import { VenueEditComponent } from './components/venue-edit/venue-edit.component';
 import { VenueDetailsComponent } from './components/venue-details/venue-details.component';
 import { VenueListComponent } from './components/venue-list/venue-list.component';
+import { ReviewComponent } from './components/review/review.component';
 
 @NgModule({
   declarations: [
@@ -97,6 +98,7 @@ import { VenueListComponent } from './components/venue-list/venue-list.component
     VenueEditComponent,
     VenueDetailsComponent,
     VenueListComponent,
+    ReviewComponent,
   ],
   imports: [
     BrowserModule,
