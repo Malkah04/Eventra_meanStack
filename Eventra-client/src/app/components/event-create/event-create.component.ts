@@ -15,8 +15,7 @@ export class EventCreateComponent implements OnInit {
   categories: any[] = [];
   venues: any[] = [];
   isLoading = false;
-  selectedCategoryId: string = '';
-  selectedVenueId: string = '';
+
   constructor(
     private fb: FormBuilder,
     private eventService: EventService,
@@ -31,9 +30,10 @@ export class EventCreateComponent implements OnInit {
       description: [''],
       categoryId: ['', Validators.required],
       venueId: ['', Validators.required],
-      ticketPrice: [0, Validators.required],
+      ticketPrice: [0, [Validators.required, Validators.min(0)]],
       date: ['', Validators.required],
       time: ['', Validators.required],
+      images: ['']
     });
 
     this.loadCategories();
@@ -41,27 +41,36 @@ export class EventCreateComponent implements OnInit {
   }
 
   loadCategories() {
-    this.categoryService.getAll().subscribe({
-      next: (res: any) => this.categories = res,
-      error: (err) => console.error('Error loading categories:', err)
-    });
-  }
-
-  loadVenues() {
-    this.venueService.getMyVenues().subscribe({
-      next: (res: any) => {
-        // لو الريسبونس فيه data.venues
-        this.venues = res?.data?.venues || res;
-      },
-      error: (err) => console.error('Error loading venues:', err)
-    });
-  }
-onCategoryChange(): void {
-    console.log('Selected Category:', this.selectedCategoryId);
+  this.categoryService.getAll().subscribe({
+    next: (res: any) => {
+      this.categories = res.data.categories;  // ✅ الصح
+      console.log('📦 Categories loaded:', this.categories);
+    },
+    error: (err) => console.error('Error loading categories:', err)
+  });
 }
 
+
+  loadVenues() {
+  this.venueService.getVenues().subscribe({
+    next: (res: any) => {
+      console.log('Venues response:', res);
+      this.venues = res.data.venues;  // أو حسب اللي بيرجعه السيرفر
+    },
+    error: (err) => console.error('Error loading venues:', err)
+  });
+}
+
+
   onSubmit() {
-    if (this.eventForm.invalid) return;
+    console.log('🔴 FORM SUBMIT TRIGGERED!');
+    console.log('Form Value:', this.eventForm.value);
+    console.log('Valid?', this.eventForm.valid);
+
+    if (this.eventForm.invalid) {
+      alert('❌ Form is invalid!');
+      return;
+    }
 
     this.isLoading = true;
     this.eventService.createEvent(this.eventForm.value).subscribe({

@@ -13,16 +13,13 @@
   <div class="form-group mb-3">
     <label for="description">Description</label>
     <textarea id="description" class="form-control" formControlName="description" rows="4"></textarea>
-    <div *ngIf="eventForm.get('description')?.invalid && eventForm.get('description')?.touched" class="text-danger">
-      Description is required
-    </div>
   </div>
 
   <!-- Category Select -->
   <div class="form-group mb-3">
     <label for="categoryId">Category</label>
-    <select id="category-select" class="form-control" [(ngModel)]="selectedCategoryId" name="category" (change)="onCategoryChange()">
-      <option value="" disabled selected>Select Category</option>
+    <select id="categoryId" class="form-control" formControlName="categoryId">
+      <option value="" disabled>Select Category</option>
       <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
     </select>
     <div *ngIf="eventForm.get('categoryId')?.invalid && eventForm.get('categoryId')?.touched" class="text-danger">
@@ -33,10 +30,11 @@
   <!-- Venue Select -->
   <div class="form-group mb-3">
     <label for="venueId">Venue</label>
-    <select id="venueId" class="form-control" formControlName="venueId" required>
-      <option value="" disabled selected>Select Venue</option>
-      <option *ngFor="let venue of venues" [value]="venue._id">{{ venue.name }}</option>
-    </select>
+    <select id="venueId" class="form-control" formControlName="venueId" >
+  <option value="" disabled>Select Venue</option>
+  <option *ngFor="let venue of venues" [value]="venue._id">{{ venue.name }}</option>
+</select>
+
     <div *ngIf="eventForm.get('venueId')?.invalid && eventForm.get('venueId')?.touched" class="text-danger">
       Please select a venue
     </div>
@@ -66,5 +64,8 @@
   </div>
 
   <!-- Submit -->
-  <button type="submit" class="btn btn-primary">Create Event</button>
+  <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+    {{ isLoading ? 'Creating...' : 'Create Event' }}
+  </button>
+
 </form>
