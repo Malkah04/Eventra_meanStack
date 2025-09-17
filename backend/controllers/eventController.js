@@ -12,7 +12,9 @@ export const createEvent = asyncHandler(async (req, res, next) => {
   });
   if (existing) {
     return next(
-      new Error("This event already exists for this venue on this date", { cause: 400 })
+      new Error("This event already exists for this venue on this date", {
+        cause: 400,
+      })
     );
   }
 
@@ -87,8 +89,13 @@ export const updateEvent = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
-    return next(new Error("Not authorized to update this event", { cause: 403 }));
+  if (
+    req.user.role === roleEnum.organizer &&
+    event.organizerId.toString() !== req.user._id.toString()
+  ) {
+    return next(
+      new Error("Not authorized to update this event", { cause: 403 })
+    );
   }
 
   Object.assign(event, req.body);
@@ -101,15 +108,19 @@ export const deleteEvent = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
-    return next(new Error("Not authorized to delete this event", { cause: 403 }));
+  if (
+    req.user.role === roleEnum.organizer &&
+    event.organizerId.toString() !== req.user._id.toString()
+  ) {
+    return next(
+      new Error("Not authorized to delete this event", { cause: 403 })
+    );
   }
 
   await event.deleteOne();
   return successResponse({ res, message: "Event deleted successfully" });
 });
 
-// =================== Search Events ====================
 export const search = asyncHandler(async (req, res) => {
   const searchItem = req.params.searchItem;
   const result = await Event.find({
@@ -124,9 +135,8 @@ export const search = asyncHandler(async (req, res) => {
   res.status(200).json({ result });
 });
 
-// =================== Filter Events ====================
 export const filter = asyncHandler(async (req, res) => {
-  const { minPrice, maxPrice, time, date } = req.query;
+  const { minPrice, maxPrice, time, date, categoryId } = req.query;
   let fil = {};
 
   if (minPrice || maxPrice) {
@@ -134,18 +144,50 @@ export const filter = asyncHandler(async (req, res) => {
     if (minPrice) fil.ticketPrice.$gte = Number(minPrice);
     if (maxPrice) fil.ticketPrice.$lte = Number(maxPrice);
   }
+  if (categoryId) fil.categoryId = categoryId;
 
-  if (time) fil.time = time;
-  if (date) {
-    fil.date = {};
-    fil.date.$gte = new Date(date);
+  console.log("time from query:", req.query.time);
+
+  if (time) {
+    fil.time = { $lte: time };
   }
 
-  const result = await Event.find(fil)
-    .populate("categoryId", "name")
-    .populate("venueId", "name")
-    .populate("organizerId", "firstName lastName email");
+  if (date) {
+    const input = new Date(date);
 
+    const start = new Date(
+      Date.UTC(
+        input.getUTCFullYear(),
+        input.getUTCMonth(),
+        input.getUTCDate(),
+        0,
+        0,
+        0,
+        0
+      )
+    );
+
+    const end = new Date(
+      Date.UTC(
+        input.getUTCFullYear(),
+        input.getUTCMonth(),
+        input.getUTCDate(),
+        23,
+        59,
+        59,
+        999
+      )
+    );
+
+    fil.date = { $gte: start, $lte: end };
+
+    console.log("Start UTC:", start.toISOString());
+    console.log("End UTC:", end.toISOString());
+  }
+
+  console.log("Filtering with:", fil);
+
+  const result = await Event.find(fil);
   if (!result || result.length === 0) {
     return res.status(404).json({ message: "No events found" });
   }

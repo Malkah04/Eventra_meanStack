@@ -1,16 +1,47 @@
 <h2>My Events</h2>
 <a *ngIf="currentUserRole !== 'user'" routerLink="/events/create">+ Create New Event</a>
+ <div class="filter-bar">
+    <div *ngIf="!showFilter" (click)="toggle()" class="fil">Filter</div>
 
-<div class="filter-category">
-  <label for="category-select">Filter by Category:</label>
-  <select id="category-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
+    <div *ngIf="showFilter" class="cont">
+    <div  class="filter-form">
+        <img src="../../../assets/close.png" style="width: 20px; height: 20px; cursor: pointer;"  (click)="toggle()" alt="">
+      
+       <select class="in" id="category-select" [(ngModel)]="filters.categoryId">
     <option value="">All Categories</option>
     <option *ngFor="let category of categories" [value]="category._id">{{ category.name }}</option>
   </select>
+      <label>
+        <input class="in" type="number" [(ngModel)]="filters.maxPrice" placeholder="Enter max price" />
+      </label>
 
-</div>
+      <label>
+        <input class="in" type="number" [(ngModel)]="filters.minPrice" placeholder="Enter min price" />
+      </label>
+      <label>
+        Time 
+        <input class="in" type="time" [(ngModel)]="filters.time" />
+      </label>
 
-<div *ngIf="!loading && filteredEvents.length > 0" class="venue-list">
+      <label>
+        Date
+        <input class="in" type="date" [(ngModel)]="filters.date" />
+      </label>
+
+      <button (click)="filter()">Apply Filter</button>
+    </div>
+    </div>
+
+ 
+    <div *ngIf="!showFilter" style="display: flex; flex-direction: row; align-items: center;">
+      <input [(ngModel)]="searhText" style="width: 300px; height: 30px; margin-right: 10px;" type="text">
+      <p class="btn" (click)="search(searhText)">Search</p>
+    </div>
+  </div>
+
+
+
+<div *ngIf="!loading && filteredEvents.length > 0 && !showFilter" class="venue-list">
   <div class="venue-card" *ngFor="let event of filteredEvents">
 
     <img [src]="event.image?.[0]" alt="{{ event.name }}" class="venue-image" />

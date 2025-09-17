@@ -19,7 +19,7 @@ router.post(
   eventController.createEvent
 );
 
-router.get("/filter/", eventController.filter);
+router.get("/filter", eventController.filter);
 
 // Get all events (عام)
 router.get("/", eventController.getEvents);
