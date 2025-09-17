@@ -1,61 +1,77 @@
 <div class="venues-container">
-    <h2>Venues</h2>
+  <div class="filter-bar">
+    <div *ngIf="!showFilter" (click)="toggle()" class="fil">Filter</div>
 
-    <div class="filter-bar">
-        <label>Filter by Category:</label>
-        <select [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
-            <option value="">All</option>
-            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+    <div *ngIf="showFilter" class="cont">
+    <div  class="filter-form">
+        <img src="../../../assets/close.png" style="width: 20px; height: 20px; cursor: pointer;"  (click)="toggle()" alt="">
+      <select class="in" [(ngModel)]="filters.categoryId" >
+        <option value="">All Category</option>
+        <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+      </select>
+
+      <label>
+        <input class="in" type="number" [(ngModel)]="filters.price" placeholder="Enter max price" />
+      </label>
+
+      <label>
+        <input class="in" type="number" [(ngModel)]="filters.capacity" placeholder="Enter max capacity" />
+      </label>
+
+      <label>
+        Available Day :
+        <select class="in" [(ngModel)]="filters.days">
+          <option value="">-- Select Day --</option>
+          <option *ngFor="let d of daysList" [value]="d">{{ d }}</option>
         </select>
+      </label>
+
+      <label>
+        Open Time :
+        <input class="in" type="time" [(ngModel)]="filters.openTime" />
+      </label>
+
+      <label>
+        Close Time :
+        <input class="in" type="time" [(ngModel)]="filters.closeTime" />
+      </label>
+
+      <button (click)="filter()">Apply Filter</button>
+    </div>
     </div>
 
-    <button class="btn-create" *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'"
-        (click)="goToCreate()">
-        + Create Venue
-    </button>
+ 
+    <div *ngIf="!showFilter" style="display: flex; flex-direction: row; align-items: center;">
+      <input [(ngModel)]="searhText" style="width: 300px; height: 30px; margin-right: 10px;" type="text">
+      <p class="btn" (click)="search(searhText)">Search</p>
+    </div>
+  </div>
 
-    <div *ngIf="loading" class="loading">Loading venues...</div>
-    <div *ngIf="!loading && venues.length === 0" class="no-data">No venues found.</div>
 
-    <div class="venue-list">
-        <div class="venue-card" *ngFor="let v of filteredVenues">
-            <img [src]="v.images?.[0]" alt="{{ v.name }}" class="venue-image" />
+  <button class="btn-create" *ngIf="!showFilter && (currentUserRole === 'admin' || currentUserRole === 'organizer')"
+    (click)="goToCreate()">
+    + Create Venue
+  </button>
 
-            <div class="venue-content">
-                <h3 class="venue-title" (click)="goToDetails(v.id)">{{ v.name }}</h3>
-                <p class="venue-description">{{ v.description }}</p>
-                <p><strong>Price:</strong> {{ v.pricePerHour }} $/hour</p>
-                <!-- <div class="venue-info">
-                    <p>
-                        <strong>📍 Location:</strong>
-                        <a [href]="'https://www.google.com/maps?q=' + v.location.x + ',' + v.location.y"
-                            target="_blank">
-                            View on Map
-                        </a>
-                    </p>
-                    <p><strong>👥 Capacity:</strong> {{ v.capacity }}</p>
-                    <p><strong>💰 Price:</strong> {{ v.pricePerHour }} $/hour</p>
-                    <div *ngIf="v.features?.length">
-                        <strong>✨ Features:</strong>
-                        <ul>
-                            <li *ngFor="let feature of v.features">{{ feature }}</li>
-                        </ul>
-                    </div>
-                    <p>
-                        <strong>🕒 Availability:</strong>
-                        {{ v.availability.openTime }} - {{ v.availability.closeTime }}
-                        ({{ v.availability.days.join(', ') }})
-                    </p>
-                </div> -->
+  <div *ngIf="!showFilter && loading" class="loading">Loading venues...</div>
+  <div *ngIf="!showFilter && !loading && venues.length === 0" class="no-data">No venues found.</div>
 
-                <div class="venue-actions">
-                    <!-- <button>Details</button> -->
-                    <button *ngIf="currentUserRole === 'admin' || v.ownerId === currentUserId"
-                        (click)="goToEdit(v.id)">Edit</button>
-                    <button *ngIf="currentUserRole === 'admin' || v.ownerId === currentUserId"
-                        (click)="deleteVenue(v.id)">Delete</button>
-                </div>
-            </div>
+  <div *ngIf="!showFilter" class="venue-list">
+    <div class="venue-card" *ngFor="let v of filteredVenues">
+      <img [src]="v.images?.[0]" alt="{{ v.name }}" class="venue-image" />
+
+      <div class="venue-content">
+        <h3 class="venue-title" (click)="goToDetails(v.id)">{{ v.name }}</h3>
+        <p class="venue-description">{{ v.description }}</p>
+        <p><strong>Price:</strong> {{ v.pricePerHour }} $/hour</p>
+
+        <div class="venue-actions">
+          <button *ngIf="currentUserRole === 'admin' || v.ownerId === currentUserId"
+            (click)="goToEdit(v.id)">Edit</button>
+          <button *ngIf="currentUserRole === 'admin' || v.ownerId === currentUserId"
+            (click)="deleteVenue(v.id)">Delete</button>
         </div>
+      </div>
     </div>
+  </div>
 </div>

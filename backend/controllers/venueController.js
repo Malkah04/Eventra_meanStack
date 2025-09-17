@@ -27,19 +27,13 @@ export const getAllVenues = asyncHandler(async (req, res) => {
 export const getVenuesByOwner = asyncHandler(async (req, res, next) => {
   if (req.query.categoryId) {
     const venues = await Venue.find({
-      $or: [
-        { ownerId: req.user._id },
-        { ownerId: "68b864db4ca665eae8fd5d5f" }
-      ],
-      categoryId: req.query.categoryId
+      $or: [{ ownerId: req.user._id }, { ownerId: "68b864db4ca665eae8fd5d5f" }],
+      categoryId: req.query.categoryId,
     });
     return successResponse({ res, data: { venues } });
   }
   const venues = await Venue.find({
-    $or: [
-      { ownerId: req.user._id },
-      { ownerId: "68b864db4ca665eae8fd5d5f" }
-    ]
+    $or: [{ ownerId: req.user._id }, { ownerId: "68b864db4ca665eae8fd5d5f" }],
   });
   if (!venues.length) return next(new Error("No venues found", { cause: 404 }));
   return successResponse({ res, data: { venues } });
@@ -47,7 +41,10 @@ export const getVenuesByOwner = asyncHandler(async (req, res, next) => {
 
 // =================== Get By Id ====================
 export const getVenueById = asyncHandler(async (req, res, next) => {
-  const venue = await Venue.findById(req.params.id).populate('categoryId', 'name');
+  const venue = await Venue.findById(req.params.id).populate(
+    "categoryId",
+    "name"
+  );
   if (!venue) return next(new Error("Venue not found", { cause: 404 }));
 
   return successResponse({ res, data: { venue } });
@@ -108,13 +105,14 @@ export const venueSearch = asyncHandler(async (req, res) => {
   res.status(200).json({ result });
 });
 export const venueFilter = asyncHandler(async (req, res) => {
-  const { price, closeTime, openTime, days, capacity } = req.query;
+  const { price, closeTime, openTime, days, capacity, categoryId } = req.query;
   let fil = {};
   if (price) fil.pricePerHour = { $lte: Number(price) };
   if (days) fil["availability.days"] = days;
-  if (openTime) fil["availability.openTime"] = openTime;
-  if (closeTime) fil["availability.closeTime"] = closeTime;
+  if (openTime) fil["availability.openTime"] = { $lte: openTime };
+  if (closeTime) fil["availability.closeTime"] = { $gte: closeTime };
   if (capacity) fil.capacity = { $lte: Number(capacity) };
+  if (categoryId) fil.categoryId = categoryId;
 
   const result = await Venue.find(fil);
   if (!result || result.length === 0) {

@@ -3,10 +3,10 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Venue, CreateVenueRequest } from '../models/models/venue.model';
 import { Category } from '../models/models/category.model';
-import { map } from 'rxjs/operators';
+import { map, retry } from 'rxjs/operators';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class VenueService {
   private apiUrl = 'http://localhost:5000/api/venues';
@@ -18,7 +18,7 @@ export class VenueService {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('limit', limit.toString());
-    
+
     if (categoryId) {
       params = params.set('categoryId', categoryId);
     }
@@ -28,7 +28,7 @@ export class VenueService {
 
   getMyVenuesByOwner(categoryId?: string): Observable<any> {
     let params = new HttpParams();
-    
+
     if (categoryId) {
       params = params.set('categoryId', categoryId);
     }
@@ -36,19 +36,31 @@ export class VenueService {
     return this.http.get<any>(`${this.apiUrl}/my`, { params });
   }
 
-  getVenueById(id: string): Observable<{ message: string, data: { venue: Venue } }> {
-    return this.http.get<{ message: string, data: { venue: Venue } }>(`${this.apiUrl}/${id}`);
+  getVenueById(
+    id: string
+  ): Observable<{ message: string; data: { venue: Venue } }> {
+    return this.http.get<{ message: string; data: { venue: Venue } }>(
+      `${this.apiUrl}/${id}`
+    );
   }
 
   getVenue(id: string) {
-    return this.http.get<{ message: string; data: { venue: any } }>(`${this.apiUrl}/${id}`);
+    return this.http.get<{ message: string; data: { venue: any } }>(
+      `${this.apiUrl}/${id}`
+    );
   }
 
   createVenue(venue: any) {
-    return this.http.post<{ message: string; data: any }>(`${this.apiUrl}`, venue);
+    return this.http.post<{ message: string; data: any }>(
+      `${this.apiUrl}`,
+      venue
+    );
   }
 
-  updateVenue(id: string, venueData: Partial<CreateVenueRequest>): Observable<Venue> {
+  updateVenue(
+    id: string,
+    venueData: Partial<CreateVenueRequest>
+  ): Observable<Venue> {
     return this.http.patch<Venue>(`${this.apiUrl}/${id}`, venueData);
   }
 
@@ -69,9 +81,23 @@ export class VenueService {
   }
 
   getCategories(): Observable<Category[]> {
-    return this.http.get<{ message: string; data: { categories: Category[] } }>(this.categoriesUrl)
+    return this.http
+      .get<{ message: string; data: { categories: Category[] } }>(
+        this.categoriesUrl
+      )
       .pipe(
-        map((response: { message: string; data: { categories: Category[] } }) => response.data.categories)
+        map(
+          (response: { message: string; data: { categories: Category[] } }) =>
+            response.data.categories
+        )
       );
+  }
+
+  search(searchItem: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/search/${searchItem}`);
+  }
+
+  filter(query: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/filter`, { params: query });
   }
 }
