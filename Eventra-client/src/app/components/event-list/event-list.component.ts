@@ -73,9 +73,17 @@ formatDate(dateString: string): string {
 
 
   onCategoryChange() {
-    console.log('Category changed:', this.selectedCategoryId);
-    this.loadEvents(this.selectedCategoryId);
+  console.log('Category changed:', this.selectedCategoryId);
+
+  if (this.selectedCategoryId) {
+    this.filteredEvents = this.events.filter(
+      event => event.categoryId?._id === this.selectedCategoryId
+    );
+  } else {
+    this.filteredEvents = [...this.events];
   }
+}
+
 
 
 

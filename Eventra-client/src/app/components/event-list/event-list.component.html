@@ -1,5 +1,6 @@
 <h2>My Events</h2>
-<a *ngIf="currentUserRole !== 'user'" routerLink="/organizer/events/create">+ Create New Event</a>
+<a *ngIf="currentUserRole !== 'user'" routerLink="/events/create">+ Create New Event</a>
+
 <div class="filter-category">
   <label for="category-select">Filter by Category:</label>
   <select id="category-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
@@ -9,9 +10,9 @@
 
 </div>
 
+<div *ngIf="!loading && filteredEvents.length > 0" class="venue-list">
+  <div class="venue-card" *ngFor="let event of filteredEvents">
 
-<div *ngIf="!loading && events.length > 0" class="venue-list">
-  <div class="venue-card" *ngFor="let event of events">
     <img [src]="event.image?.[0]" alt="{{ event.name }}" class="venue-image" />
 
     <div class="venue-content">
