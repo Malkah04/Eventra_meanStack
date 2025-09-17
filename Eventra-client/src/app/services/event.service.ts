@@ -22,12 +22,18 @@ export class EventService {
     }
 
     return this.http.get<any>(this.apiUrl, { params });
+    
   }
 
   // 📌 Get organizer's own events
-  getMyEvents(): Observable<{ message: string; data: { events: Event[] } }> {
+  getMyEvents(categoryId?: string): Observable<{ message: string; data: { events: Event[] } }> {
+    let params = new HttpParams();
+    
+    if (categoryId) {
+      params = params.set('categoryId', categoryId);
+    }
     return this.http.get<{ message: string; data: { events: Event[] } }>(
-      `${this.apiUrl}/my`
+      `${this.apiUrl}/my`, { params }
     );
   }
 

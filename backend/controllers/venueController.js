@@ -26,10 +26,21 @@ export const getAllVenues = asyncHandler(async (req, res) => {
 // =================== Get By Owner ====================
 export const getVenuesByOwner = asyncHandler(async (req, res, next) => {
   if (req.query.categoryId) {
-    const venues = await Venue.find({ ownerId: req.user._id, categoryId: req.query.categoryId });
+    const venues = await Venue.find({
+      $or: [
+        { ownerId: req.user._id },
+        { ownerId: "68b864db4ca665eae8fd5d5f" }
+      ],
+      categoryId: req.query.categoryId
+    });
     return successResponse({ res, data: { venues } });
   }
-  const venues = await Venue.find({ ownerId: req.user._id });
+  const venues = await Venue.find({
+    $or: [
+      { ownerId: req.user._id },
+      { ownerId: "68b864db4ca665eae8fd5d5f" }
+    ]
+  });
   if (!venues.length) return next(new Error("No venues found", { cause: 404 }));
   return successResponse({ res, data: { venues } });
 });

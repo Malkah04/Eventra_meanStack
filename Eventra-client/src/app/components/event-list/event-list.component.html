@@ -3,28 +3,55 @@
 <div class="filter-category">
   <label for="category-select">Filter by Category:</label>
   <select id="category-select" [(ngModel)]="selectedCategoryId" (change)="onCategoryChange()">
-  <option value="">All Categories</option>
-  <option *ngFor="let category of categories" [value]="category._id">{{ category.name }}</option>
-</select>
+    <option value="">All Categories</option>
+    <option *ngFor="let category of categories" [value]="category._id">{{ category.name }}</option>
+  </select>
 
 </div>
 
 
-<div *ngIf="!loading && events.length > 0" class="events-list">
-  <div *ngFor="let event of events" class="event-card">
+<div *ngIf="!loading && events.length > 0" class="venue-list">
+  <div class="venue-card" *ngFor="let event of events">
+    <img [src]="event.image?.[0]" alt="{{ event.name }}" class="venue-image" />
+
+    <div class="venue-content">
+      <h3 class="venue-title" (click)="goToDetails(event._id)">
+        {{ event.name }}
+      </h3>
+      <p class="venue-description">{{ event.description }}</p>
+
+      <div class="venue-info">
+        <p>
+          <strong>Venue:</strong>
+          <a [routerLink]="['/venues', event.venueId?._id]">
+            {{ event.venueId?.name }}
+          </a>
+        </p>
+      </div>
+
+      <div class="venue-actions">
+        <button *ngIf="currentUserRole !== 'user'" (click)="goToEdit(event._id)">
+          Edit
+        </button>
+        <button *ngIf="currentUserRole !== 'user'" (click)="deleteEvent(event._id)">
+          Delete
+        </button>
+        <!-- <button (click)="goToDetails(event._id)">Details</button> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- <div *ngFor="let event of events" class="event-card">
+    <img [src]="event.image?.[0]" alt="{{ event.name }}" class="venue-image" />
     <p><strong>Name:</strong>{{ event.name }}</p>
     <p><strong>Description:</strong>{{ event.description }}</p>
     <p><strong>Category:</strong> {{ event.categoryId?.name }}</p>
     <p><strong>Venue:</strong> {{ event.venueId?.name }}</p>
     <p><strong>Price:</strong> {{ event.ticketPrice }} EGP</p>
     <p><strong>Date:</strong> {{ formatDate(event.date) }} - {{ event.time }}</p>
-<p>
-          <strong>Venue:</strong>
-          <a [routerLink]="['/venues', event.venueId?._id]">{{event.venueId?.name}}</a>
-        </p>
-
-    <button *ngIf="currentUserRole !== 'user'" (click)="goToEdit(event._id)">Edit</button>
-    <button *ngIf="currentUserRole !== 'user'" (click)="deleteEvent(event._id)">Delete</button>
-    <button (click)="goToDetails(event._id)">Details</button>
-  </div>
-</div>
+    
+  </div> -->
+<!-- </div> -->

@@ -15,8 +15,13 @@
 
         <!-- Location -->
         <div class="location">
-            <strong>Location:</strong> Latitude: {{ venue.location.x }}, Longitude: {{ venue.location.y }}
+            <strong>Location:</strong>
+            <a [href]="'https://www.google.com/maps?q=' + venue.location.x + ',' + venue.location.y" target="_blank"
+                rel="noopener noreferrer">
+                View on Google Maps
+            </a>
         </div>
+
 
         <!-- Availability -->
         <div class="availability">
@@ -41,19 +46,20 @@
             <span class="feature-tag" *ngFor="let feature of venue.features">{{ feature }}</span>
         </div>
 
-    <div *ngIf="currentUserRole === 'organizer' " class="con">
-        <button (click)="addToCart(venue._id ,venue.availability.openTime ,venue.availability.closeTime)" >Add to Cart</button>
-  
-        <div>
-            <button class="com" (click)="toggleComment()"> comment </button>
+        <div *ngIf="currentUserRole === 'organizer' " class="con">
+            <button (click)="addToCart(venue._id ,venue.availability.openTime ,venue.availability.closeTime)">Add to
+                Cart</button>
+
+            <div>
+                <button class="com" (click)="toggleComment()"> comment </button>
+            </div>
         </div>
+
+        <div *ngIf="showComments">
+            <app-review [postId]="venue._id" [postType]="'Venue'"></app-review>
+        </div>
+
     </div>
-
-  <div *ngIf="showComments">
-  <app-review [postId]="venue._id"  [postType]="'Venue'"></app-review>
-</div>
-
-</div>
 </div>
 
 <ng-template #loading>

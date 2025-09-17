@@ -18,6 +18,7 @@ export class EventsListComponent implements OnInit {
   selectedCategoryId: string = '';
   loading = false;
   currentUserRole= '';
+  currentUserId= '';
   filteredEvents: any[] = [];
   constructor(private eventService: EventService,private categoryService: CategoryService, private router: Router,private authService: AuthService) {
   this.router.events.pipe(
@@ -32,7 +33,8 @@ export class EventsListComponent implements OnInit {
   console.log('✅ Current User:', user);
 
   this.currentUserRole = user?.role?.toLowerCase() || '';
-  
+  this.currentUserId = user?._id?.toLowerCase() || '';
+
   this.loadEvents();
   this.loadCategories();
   }
@@ -45,37 +47,35 @@ formatDate(dateString: string): string {
   }
  loadCategories() {
     this.categoryService.getAll().subscribe((res: any) => {
-      console.log('Categories from API:', res);
-      this.categories = res.data.categories;  // أو حسب شكل الرد
+      this.categories = res.data.categories;
     });
   }
   loadEvents(categoryId?: string) {
-  console.log('currentUserRole:', this.currentUserRole);
-  this.loading = true;
+    this.loading = true;
 
-  if (this.currentUserRole === 'organizer') {
-    this.eventService.getMyEvents().subscribe((res: any) => {
-      this.events = res.data.events;
-      this.filteredEvents = this.events;
-      this.loading = false;
-    });
-  } else {
-    if (this.currentUserRole === '') {
-      return;
+    if (this.currentUserRole === 'organizer') {
+      this.eventService.getMyEvents(categoryId).subscribe((res: any) => {
+        this.events = res.data.events;
+        this.filteredEvents = this.events;
+        this.loading = false;
+      });
+    } else {
+      if (this.currentUserRole === '') {
+        return;
+      }
+      this.eventService.getEvents(1, 100, categoryId).subscribe((res: any) => {
+        this.events = res.data.events;
+        this.filteredEvents = this.events;
+        this.loading = false;
+      });
     }
-    this.eventService.getEvents(1, 100, categoryId).subscribe((res: any) => {
-      this.events = res.data.events;
-      this.filteredEvents = this.events;
-      this.loading = false;
-    });
   }
-}
 
 
- onCategoryChange() {
-  console.log('Category changed:', this.selectedCategoryId);
-  this.loadEvents(this.selectedCategoryId);
-}
+  onCategoryChange() {
+    console.log('Category changed:', this.selectedCategoryId);
+    this.loadEvents(this.selectedCategoryId);
+  }
 
 
 

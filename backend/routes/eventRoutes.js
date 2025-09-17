@@ -24,6 +24,14 @@ router.get("/filter/", eventController.filter);
 // Get all events (عام)
 router.get("/", eventController.getEvents);
 
+// Organizer only - Get events created by the logged-in organizer
+router.get(
+  "/my",
+  authentication(),
+  authorization([roleEnum.organizer]),
+  eventController.getMyEvents
+);
+
 // Get single event (عام)
 router.get(
   "/:id",
@@ -50,14 +58,6 @@ router.delete(
   authorization([roleEnum.organizer, roleEnum.admin]),
   validation(eventValidation.delete),
   eventController.deleteEvent
-);
-
-// Organizer only - Get events created by the logged-in organizer
-router.get(
-  "/my-events",
-  authentication(),
-  authorization([roleEnum.organizer]),
-  eventController.getMyEvents
 );
 
 router.get("/search/:searchItem", eventController.search);

@@ -49,6 +49,7 @@ export class VenueListComponent implements OnInit {
     console.log('✅ Current User:', user);
 
     this.currentUserRole = user?.role?.toLowerCase() || '';
+    this.currentUserId = user?._id?.toLowerCase() || '';
 
     this.loadVenues();
     this.loadCategories();
@@ -67,6 +68,8 @@ export class VenueListComponent implements OnInit {
     
     if (this.currentUserRole === 'organizer') {
       this.venueService.getMyVenuesByOwner(categoryId).subscribe((res: any) => {
+        console.log(res);
+        
         this.venues = res.data.venues;
         this.filteredVenues = this.venues;
         this.loading = false;
@@ -81,19 +84,6 @@ export class VenueListComponent implements OnInit {
         this.loading = false;
       });
     }
-    // this.venueService.getVenues(1, 100, categoryId).subscribe((res: any) => {
-    //   console.log('Venues response:', res);
-    //   const user = JSON.parse(localStorage.getItem('user') || '{}');
-    //   const userId = user._id;
-
-    //   this.venues = res.data.venues;
-    //   if (this.currentUserRole === 'organizer') {
-    //     this.filteredVenues = this.venues.filter(v => v.ownerId === userId);
-    //   } else {
-    //     this.filteredVenues = this.venues;
-    //   }
-    //   this.loading = false;
-    // });
   }
 
   onCategoryChange() {

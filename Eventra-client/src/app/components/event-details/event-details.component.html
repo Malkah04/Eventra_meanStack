@@ -1,5 +1,6 @@
 <div *ngIf="event" class="event-details">
   <!-- بيانات الحدث الأساسية -->
+  <img src="{{event.image[0]}}" alt="{{ event.name }}" class="event-image" />
   <p><strong>Name:</strong> {{ event.name }}</p>
   <p><strong>Description:</strong> {{ event.description || 'No description provided' }}</p>
   <p><strong>Category:</strong> {{ event.categoryId?.name || 'N/A' }}</p>
@@ -9,26 +10,21 @@
   <p><strong>Time:</strong> {{ event.time }}</p>
 
   <!-- عرض أزرار الحجز للمستخدم العادي -->
-<div *ngIf="isAttendee">
-  <h1><label for="ticketQuantity">Number of Tickets:</label></h1>
-  <input
-    id="ticketQuantity"
-    type="number"
-    [(ngModel)]="ticketQuantity"
-    min="1"
-  />
-   <div class="con">
-  <button (click)="addToCart()">Add to Cart</button>
-  
-  <div class="cont">
-    <button class="com" (click)="toggleComment()"> comment </button>
-  </div>
-  </div>
+  <div *ngIf="isAttendee">
+    <h1><label for="ticketQuantity">Number of Tickets:</label></h1>
+    <input id="ticketQuantity" type="number" [(ngModel)]="ticketQuantity" min="1" />
+    <div class="con">
+      <button (click)="addToCart()">Add to Cart</button>
 
-  <div *ngIf="showComments">
-  <app-review [postId]="event._id"  [postType]="'Event'"></app-review>
-</div>
-</div>
+      <div class="cont">
+        <button class="com" (click)="toggleComment()"> comment </button>
+      </div>
+    </div>
+
+    <div *ngIf="showComments">
+      <app-review [postId]="event._id" [postType]="'Event'"></app-review>
+    </div>
+  </div>
 </div>
 
 <!-- عرض حجزات الأورجانيزر -->
@@ -40,7 +36,7 @@
   </div>
 
   <div *ngIf="!loadingBookings && bookings.length === 0" class="no-bookings">
-   <b> No bookings yet.</b>
+    <b> No bookings yet.</b>
   </div>
 
   <ul *ngIf="!loadingBookings && bookings.length > 0" class="bookings-list">

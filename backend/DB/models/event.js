@@ -7,10 +7,10 @@ const eventSchema = new mongoose.Schema(
     ticketPrice: { type: Number, required: true, min: [0, "Price must be positive"] },
     date: { type: Date, required: true },
     time: { type: String, required: true },
-    image:{
+    image: {
       type: [String],
-      default: []},
-
+      default: []
+    },
     categoryId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
@@ -27,12 +27,12 @@ const eventSchema = new mongoose.Schema(
       required: true,
     },
     location: {
-  type: {
-    lat: Number,
-    lng: Number
-  },
-  required: true
-}
+      type: {
+        lat: Number,
+        lng: Number
+      },
+      required: true
+    }
   },
   {
     timestamps: true,

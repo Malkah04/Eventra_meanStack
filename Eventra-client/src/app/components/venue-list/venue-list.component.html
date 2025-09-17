@@ -22,10 +22,10 @@
             <img [src]="v.images?.[0]" alt="{{ v.name }}" class="venue-image" />
 
             <div class="venue-content">
-                <h3 class="venue-title">{{ v.name }}</h3>
+                <h3 class="venue-title" (click)="goToDetails(v.id)">{{ v.name }}</h3>
                 <p class="venue-description">{{ v.description }}</p>
-
-                <div class="venue-info">
+                <p><strong>Price:</strong> {{ v.pricePerHour }} $/hour</p>
+                <!-- <div class="venue-info">
                     <p>
                         <strong>📍 Location:</strong>
                         <a [href]="'https://www.google.com/maps?q=' + v.location.x + ',' + v.location.y"
@@ -46,13 +46,14 @@
                         {{ v.availability.openTime }} - {{ v.availability.closeTime }}
                         ({{ v.availability.days.join(', ') }})
                     </p>
-                </div>
+                </div> -->
 
                 <div class="venue-actions">
-                    <button (click)="goToDetails(v.id)">Details</button>
-                    <button *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'"
+                    <!-- <button>Details</button> -->
+                    <button *ngIf="currentUserRole === 'admin' || v.ownerId === currentUserId"
                         (click)="goToEdit(v.id)">Edit</button>
-                    <button *ngIf="currentUserRole === 'admin' || currentUserRole === 'organizer'" (click)="deleteVenue(v.id)">Delete</button>
+                    <button *ngIf="currentUserRole === 'admin' || v.ownerId === currentUserId"
+                        (click)="deleteVenue(v.id)">Delete</button>
                 </div>
             </div>
         </div>

@@ -23,7 +23,7 @@ export const createEvent = asyncHandler(async (req, res, next) => {
 // =================== Get All Events ====================
 export const getEvents = asyncHandler(async (req, res) => {
   const { categoryId } = req.query;
-  let filter= {};
+  let filter = {};
 
   if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
     filter.categoryId = new mongoose.Types.ObjectId(categoryId);
@@ -47,8 +47,11 @@ export const getMyEvents = asyncHandler(async (req, res, next) => {
   if (req.user.role !== roleEnum.organizer) {
     return next(new Error("Not authorized", { cause: 403 }));
   }
-
-  const events = await Event.find({ organizerId: req.user._id })
+  const filter = { organizerId: req.user._id };
+  if (req.query.categoryId) {
+    filter.categoryId = req.query.categoryId;
+  }
+  const events = await Event.find(filter)
     .populate("categoryId", "name")
     .populate("venueId", "name")
     .populate("organizerId", "firstName lastName email");
@@ -124,7 +127,7 @@ export const search = asyncHandler(async (req, res) => {
 // =================== Filter Events ====================
 export const filter = asyncHandler(async (req, res) => {
   const { minPrice, maxPrice, time, date } = req.query;
-  let fil= {};
+  let fil = {};
 
   if (minPrice || maxPrice) {
     fil.ticketPrice = {};
