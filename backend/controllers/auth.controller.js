@@ -131,23 +131,25 @@ export const login = asyncHandler(async (req, res, next) => {
   const isMatch = await compareHash({ plaintext: password, hashValue: user.password });
   if (!isMatch) return next(new Error("Invalid email or password", { cause: 400 }));
 
-  // access token
+  // Access token
   const accessToken = generateToken({
     payload: { _id: user._id, role: user.role },
     signature: process.env.ACCESS_TOKEN_USER_SIGNATURE,
     options: { expiresIn: process.env.ACCESS_EXPIRES_IN || "15m" },
   });
 
-  // refresh token
+  // Refresh token
   const refreshToken = generateToken({
     payload: { _id: user._id, role: user.role },
     signature: process.env.REFRESH_TOKEN_USER_SIGNATURE,
     options: { expiresIn: process.env.REFRESH_EXPIRES_IN || "7d" },
   });
 
-  await UserModel.findByIdAndUpdate(user._id, {
-    $push: { refreshTokens: { token: refreshToken } },
-  });
+  // إدارة refresh tokens: الاحتفاظ بآخر 5 فقط
+  const userDoc = await UserModel.findById(user._id);
+  userDoc.refreshTokens.push({ token: refreshToken });
+  if (userDoc.refreshTokens.length > 5) userDoc.refreshTokens.shift(); // حذف الأقدم
+  await userDoc.save();
 
   return successResponse({
     res,
@@ -155,6 +157,7 @@ export const login = asyncHandler(async (req, res, next) => {
     data: { user, accessToken, refreshToken },
   });
 });
+
 
 // =================== Google Login ====================
 export const googleLogin = asyncHandler(async (req, res, next) => {
@@ -185,7 +188,11 @@ export const googleLogin = asyncHandler(async (req, res, next) => {
     options: { expiresIn: process.env.REFRESH_EXPIRES_IN || '7d' },
   });
 
-  await UserModel.findByIdAndUpdate(user._id, { $push: { refreshTokens: { token: refreshToken } } });
+  // إدارة refresh tokens: الاحتفاظ بآخر 5 فقط
+  const userDoc = await UserModel.findById(user._id);
+  userDoc.refreshTokens.push({ token: refreshToken });
+  if (userDoc.refreshTokens.length > 5) userDoc.refreshTokens.shift();
+  await userDoc.save();
 
   return successResponse({
     res,

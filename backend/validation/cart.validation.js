@@ -1,43 +1,42 @@
 import Joi from "joi";
 
+// ➕ Add to Cart
 export const addToCart = {
   body: Joi.object({
-    userID: Joi.string().required(),
     eventID: Joi.string().required(),
     quantity: Joi.number().min(1).required(),
   }),
 };
 
+// ✏️ Update Quantity
 export const updateQuantity = {
   body: Joi.object({
-    userID: Joi.string().required(),
     eventID: Joi.string().required(),
     quantity: Joi.number().min(1).required(),
   }),
 };
 
+// ➖ Remove item from Cart
 export const removeFromCart = {
   body: Joi.object({
-    userID: Joi.string().required(),
     eventID: Joi.string().required(),
   }),
 };
 
+// 🗑 Empty Cart
 export const emptyCart = {
-  body: Joi.object({
-    userID: Joi.string().required(),
-  }),
+  // لا حاجة ل body لأن userID يجي من التوكن
+  body: Joi.object({}),
 };
 
+// 📦 Get User Cart
 export const getCart = {
-  params: Joi.object({
-    userID: Joi.string().required(),
-  }),
+  // params فاضية لأن userID من التوكن
+  params: Joi.object({}),
 };
 
+// 💳 Checkout
 export const checkout = {
-  body: Joi.object({
-    userID: Joi.string().required(),
-  }),
+  // body فاضية لأن userID من التوكن
+  body: Joi.object({}),
 };
-

@@ -3,6 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptor } from './interceptors/auth.interceptor';
 // ✅ Angular Material imports (كاملة)
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -38,8 +39,6 @@ import { AuthGuard } from './guards/guards/auth.guard';
 import { RoleGuard } from './guards/guards/role.guard';
 
 // Interceptors
-import { AuthInterceptor } from './interceptors/auth.interceptor';
-
 // Components
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { LoginComponent } from './components/login/login.component';
@@ -68,6 +67,9 @@ import { VenueEditComponent } from './components/venue-edit/venue-edit.component
 import { VenueDetailsComponent } from './components/venue-details/venue-details.component';
 import { VenueListComponent } from './components/venue-list/venue-list.component';
 import { ReviewComponent } from './components/review/review.component';
+import { PublicProfileComponent } from './components/public-profile/public-profile.component';
+import { ProfileComponent } from './components/profile/profile.component';
+import { UsersListComponent } from './components/users-list/users-list.component';
 
 @NgModule({
   declarations: [
@@ -99,6 +101,9 @@ import { ReviewComponent } from './components/review/review.component';
     VenueDetailsComponent,
     VenueListComponent,
     ReviewComponent,
+    PublicProfileComponent,
+    ProfileComponent,
+    UsersListComponent,
   ],
   imports: [
     BrowserModule,
@@ -141,7 +146,7 @@ import { ReviewComponent } from './components/review/review.component';
           {
             id: GoogleLoginProvider.PROVIDER_ID,
             provider: new GoogleLoginProvider(
-              '50990553909-n1krvis5mpprq9l5amija61h4v04roej.apps.googleusercontent.com'
+              '550990553909-n1krvis5mpprq9l5amija61h4v04roej.apps.googleusercontent.com'
             ),
           },
         ],

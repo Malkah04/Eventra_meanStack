@@ -32,12 +32,26 @@ export class NavbarComponent implements OnInit {
   }
 
   navigateToDashboard(): void {
-    if (this.currentUser?.role === 'admin') {
+    if (this.currentUser?.role?.toLowerCase() === 'admin') {
       this.router.navigate(['/admin/dashboard']);
-    } else if (this.currentUser?.role === 'organizer') {
+    } else if (this.currentUser?.role?.toLowerCase() === 'organizer') {
       this.router.navigate(['/organizer/dashboard']);
     } else {
       this.router.navigate(['/dashboard']);
+    }
+  }
+
+  goToProfileSettings(): void {
+    this.router.navigate(['/profile']);
+  }
+
+  goToManageUsers(): void {
+    this.router.navigate(['/admin/users']);
+  }
+
+  goToPublicProfile(): void {
+    if (this.currentUser?._id) {
+      this.router.navigate([`/users/${this.currentUser._id}/profile`]);
     }
   }
 }

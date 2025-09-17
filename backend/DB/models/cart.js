@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-//  Enum for cart status
+// Enum for cart status
 export const cartStatusEnum = {
   active: "active",
   checkedOut: "checkedOut",
@@ -27,14 +27,13 @@ const cartItemSchema = new mongoose.Schema(
     },
     subtotal: {
       type: Number,
-      required: true,
       min: [0, "Subtotal must be a positive number"],
     },
   },
-  { _id: false } // prevent MongoDB from creating _id for each item
+  { _id: false }
 );
 
-//  Main Cart Schema
+// Main Cart Schema
 const cartSchema = new mongoose.Schema(
   {
     userID: {
@@ -58,13 +57,13 @@ const cartSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true, // adds createdAt & updatedAt
+    timestamps: true,
     toObject: { virtuals: true },
     toJSON: { virtuals: true },
   }
 );
 
-// Virtual field (number of items in cart)
+// Virtual field: number of items in cart
 cartSchema.virtual("itemCount").get(function () {
   return this.items.reduce((acc, item) => acc + item.quantity, 0);
 });
@@ -78,8 +77,7 @@ cartSchema.pre("save", function (next) {
   next();
 });
 
-//  Export model
+// Export model
 export const CartModel = mongoose.models.Cart || mongoose.model("Cart", cartSchema);
-CartModel.syncIndexes();
 
 export default CartModel;

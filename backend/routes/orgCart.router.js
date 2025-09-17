@@ -5,22 +5,22 @@ import {
   deleteCart,
   deleteItemFromCart,
 } from "../controllers/orgCart.controller.js";
-import {
-  authentication,
-  authorization,
-} from "../middleware/authentication.middleware.js";
+import { authentication, authorization } from "../middleware/authentication.middleware.js";
 import { roleEnum } from "../DB/models/user.model.js";
 import { validation } from "../middleware/validation.middleware.js";
 import { orgCartValidation } from "../validation/orgCart.validation.js";
+
 const router = express.Router();
 
+// 📦 Get all items in organizer's cart
 router.get(
-  "/:id",
+  "/",
   authentication(),
   authorization([roleEnum.organizer, roleEnum.admin]),
-  validation(orgCartValidation.getByOrgId),
   getAllItemByOrg
 );
+
+// ➕ Add item (venue or event) to cart
 router.post(
   "/",
   authentication(),
@@ -28,15 +28,18 @@ router.post(
   validation(orgCartValidation.create),
   addItemToCart
 );
-router.delete(
-  "/:id",
-  authentication(),
-  authorization([roleEnum.organizer, roleEnum.admin]),
-  validation(orgCartValidation.deleteCart),
-  deleteCart
-);
+
+// 🗑 Delete entire cart
 router.delete(
   "/",
+  authentication(),
+  authorization([roleEnum.organizer, roleEnum.admin]),
+  deleteCart
+);
+
+// ➖ Delete one item from cart
+router.delete(
+  "/item",
   authentication(),
   authorization([roleEnum.organizer, roleEnum.admin]),
   validation(orgCartValidation.deleteItemInCart),

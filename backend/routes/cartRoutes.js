@@ -6,6 +6,7 @@ import * as validators from "../validation/cart.validation.js";
 
 const router = Router();
 
+// ➕ Add to cart
 router.post(
   "/add",
   authentication(),
@@ -13,13 +14,7 @@ router.post(
   cartController.addToCart
 );
 
-router.put(
-  "/update", // 👈 update quantity
-  authentication(),
-  validation(validators.updateQuantity),
-  cartController.updateQuantity
-);
-
+// ➖ Remove item from cart
 router.delete(
   "/remove",
   authentication(),
@@ -27,15 +22,29 @@ router.delete(
   cartController.removeFromCart
 );
 
-router.post("/remove", authentication(), validation(validators.removeFromCart), cartController.removeFromCart);
-
-router.get(
-  "/:userID",
+// ✏️ Update quantity
+router.put(
+  "/update",
   authentication(),
-  validation(validators.getCart),
+  validation(validators.updateQuantity),
+  cartController.updateQuantity
+);
+
+// 🗑 Empty cart
+router.delete(
+  "/empty",
+  authentication(),
+  cartController.emptyCart
+);
+
+// 📦 Get user cart
+router.get(
+  "/",
+  authentication(),
   cartController.getCart
 );
 
+// 💳 Checkout
 router.post(
   "/checkout",
   authentication(),

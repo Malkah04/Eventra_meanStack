@@ -1,0 +1,135 @@
+/* Loading + Messages */
+.message {
+  text-align: center;
+  margin: 16px auto;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.message:contains("✅") {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.message:contains("❌") {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
+/* Profile Settings Container */
+.profile-settings, .public-profile {
+  max-width: 500px;
+  margin: auto;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  background: #fff;
+}
+
+h2.username {
+  margin: 10px 0;
+  text-align: center;
+  font-weight: 600;
+}
+
+.extra-info {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #555;
+}
+
+
+/* Avatar */
+.avatar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #6d4c41;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+.avatar input[type="file"] {
+  margin-top: 8px;
+  font-size: 0.9rem;
+}
+
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+label {
+  font-weight: 600;
+  color: #4e342e;
+}
+
+input, textarea {
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  outline: none;
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+input:focus, textarea:focus {
+  border-color: #6d4c41;
+  box-shadow: 0 0 6px rgba(109, 76, 65, 0.3);
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+/* Buttons */
+button {
+  background: #6d4c41;
+  color: #fff;
+  padding: 10px;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:disabled {
+  background: #a1887f;
+  cursor: not-allowed;
+}
+
+button:hover:not(:disabled) {
+  background: #3e2723;
+  transform: translateY(-2px);
+}
+
+/* Divider */
+hr {
+  margin: 24px 0;
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,27 @@
+<div *ngIf="loading">Loading users...</div>
+<div *ngIf="!loading && errorMessage">{{ errorMessage }}</div>
+
+<div *ngIf="!loading && users.length">
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Avatar</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Role</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <td>
+         <img *ngIf="user.avatar" [src]="getAvatarUrl(user.avatar)" alt="avatar" width="40" height="40">
+        </td>
+        <td>{{ user.firstName }} {{ user.lastName }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.role }}</td>
+        <td>{{ user.phone }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

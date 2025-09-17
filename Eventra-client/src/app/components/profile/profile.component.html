@@ -1,0 +1,62 @@
+<div *ngIf="loading" class="loading">⏳ Loading profile...</div>
+<div *ngIf="!loading && message" class="message">{{ message }}</div>
+
+<div *ngIf="!loading && user" class="profile-settings">
+  <h2>👤 My Profile</h2>
+
+  <div class="avatar">
+    <!-- صورة البروفايل الحالية -->
+    <img
+      *ngIf="user.avatar && !avatarPreview"
+      [src]="getAvatarUrl(user.avatar)"
+      alt="Avatar"
+      width="120"
+      height="120"
+      class="avatar-img"
+    >
+
+    <!-- preview عند اختيار صورة جديدة -->
+    <img
+      *ngIf="avatarPreview"
+      [src]="avatarPreview"
+      alt="Preview"
+      width="120"
+      height="120"
+      class="avatar-img"
+    >
+
+    <!-- Placeholder لو مفيش صورة -->
+    <div *ngIf="!user.avatar && !avatarPreview" class="placeholder-avatar">👤</div>
+
+    <input type="file" (change)="onAvatarSelected($event)">
+  </div>
+
+  <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+    <label>First Name</label>
+    <input formControlName="firstName" type="text">
+
+    <label>Last Name</label>
+    <input formControlName="lastName" type="text">
+
+    <label>Phone</label>
+    <input formControlName="phone" type="text">
+
+    <label>Bio</label>
+    <textarea formControlName="bio"></textarea>
+
+    <button type="submit" [disabled]="profileForm.invalid">Update Profile</button>
+  </form>
+
+  <hr>
+
+  <h3>Update Password</h3>
+  <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()">
+    <label>Old Password</label>
+    <input formControlName="oldPassword" type="password">
+
+    <label>New Password</label>
+    <input formControlName="newPassword" type="password">
+
+    <button type="submit" [disabled]="passwordForm.invalid">Update Password</button>
+  </form>
+</div>

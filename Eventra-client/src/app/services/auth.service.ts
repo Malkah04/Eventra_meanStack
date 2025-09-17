@@ -31,7 +31,7 @@ export class AuthService {
     if (accessToken && userData) {
       try {
         const user: User = JSON.parse(userData);
-        this.currentUserSubject.next(user);
+        this.currentUserSubject.next(this.normalizeUser(user));
       } catch {
         this.logout();
       }
@@ -85,7 +85,6 @@ export class AuthService {
 
   // ----------- STORE USER DATA -----------
   private storeUserData(response: any): void {
-    // handle both { data: {...} } and direct {...}
     const data = response.data || response;
 
     localStorage.setItem('accessToken', data.accessToken);
@@ -93,9 +92,17 @@ export class AuthService {
       localStorage.setItem('refreshToken', data.refreshToken);
     }
     if (data.user) {
-      localStorage.setItem('user', JSON.stringify(data.user));
-      this.currentUserSubject.next(data.user);
+      const normalizedUser = this.normalizeUser(data.user);
+      localStorage.setItem('user', JSON.stringify(normalizedUser));
+      this.currentUserSubject.next(normalizedUser);
     }
+  }
+
+  // ----------- UPDATE CURRENT USER -----------
+  updateCurrentUser(user: User): void {
+    const normalizedUser = this.normalizeUser(user);
+    this.currentUserSubject.next(normalizedUser);
+    localStorage.setItem('user', JSON.stringify(normalizedUser));
   }
 
   // ----------- HELPERS -----------
@@ -121,5 +128,13 @@ export class AuthService {
 
   isUser(): boolean {
     return this.getCurrentUser()?.role?.toLowerCase() === 'user';
+  }
+
+  // ----------- NORMALIZE USER (avatar url fix) -----------
+  private normalizeUser(user: User): User {
+    if (user.avatar && !user.avatar.startsWith('http')) {
+      return { ...user, avatar: `http://localhost:5000${user.avatar}` };
+    }
+    return user;
   }
 }

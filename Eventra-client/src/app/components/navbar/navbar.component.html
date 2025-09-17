@@ -1,12 +1,16 @@
 <mat-toolbar class="navbar">
   <div class="navbar-container">
+    <!-- Logo -->
     <div class="navbar-brand">
       <a routerLink="/" class="brand-link">
         <span class="brand-text">Eventra</span>
       </a>
     </div>
 
+    <!-- Menu -->
     <div class="navbar-menu" [class.active]="isMenuOpen">
+
+      <!-- لو المستخدم مش عامل Login -->
       <div class="navbar-nav" *ngIf="!currentUser">
         <a routerLink="/events" routerLinkActive="active" class="nav-link">Events</a>
         <a routerLink="/venues" routerLinkActive="active" class="nav-link">Venues</a>
@@ -17,38 +21,63 @@
         </div>
       </div>
 
+      <!-- لو المستخدم عامل Login -->
       <div class="navbar-nav" *ngIf="currentUser">
         <a routerLink="/events" routerLinkActive="active" class="nav-link">Events</a>
         <a routerLink="/venues" routerLinkActive="active" class="nav-link">Venues</a>
         <a routerLink="/map" routerLinkActive="active" class="nav-link">Map</a>
 
+        <!-- User Menu -->
         <div class="user-menu">
           <button mat-button [matMenuTriggerFor]="menu" class="user-button">
-            <mat-icon>account_circle</mat-icon>
-            <!-- ✅ استخدم firstName + lastName -->
-           <span class="username">{{currentUser.firstName}} {{currentUser.lastName}}</span>
+            <!-- عرض الصورة لو موجودة -->
+            <img *ngIf="currentUser.avatar" [src]="currentUser.avatar" alt="Avatar" class="avatar-img">
+            <mat-icon *ngIf="!currentUser.avatar">account_circle</mat-icon>
 
+            <span class="username">{{ currentUser.firstName }} {{ currentUser.lastName }}</span>
             <mat-icon>arrow_drop_down</mat-icon>
           </button>
-          
+
           <mat-menu #menu="matMenu">
+            <!-- Dashboard -->
             <button mat-menu-item (click)="navigateToDashboard()">
               <mat-icon>dashboard</mat-icon>
               <span>Dashboard</span>
             </button>
-            <button mat-menu-item routerLink="/profile">
-              <mat-icon>person</mat-icon>
-              <span>Profile</span>
+
+            <!-- Profile Settings -->
+            <button mat-menu-item (click)="goToProfileSettings()">
+              <mat-icon>settings</mat-icon>
+              <span>Profile Settings</span>
             </button>
-            <button mat-menu-item routerLink="/bookings" *ngIf="currentUser.role === 'user'">
+
+            <!-- Public Profile -->
+            <button mat-menu-item (click)="goToPublicProfile()">
+              <mat-icon>person</mat-icon>
+              <span>My Public Profile</span>
+            </button>
+
+            <!-- Bookings -->
+            <button mat-menu-item routerLink="/bookings" *ngIf="currentUser.role?.toLowerCase() === 'user'">
               <mat-icon>book</mat-icon>
               <span>My Bookings</span>
             </button>
-            <button mat-menu-item routerLink="/organizer/manage" *ngIf="currentUser.role === 'organizer'">
-              <mat-icon>manage_accounts</mat-icon>
-              <span>Manage</span>
+
+            <!-- Organizer -->
+            <button mat-menu-item routerLink="/organizer/manage" *ngIf="currentUser.role?.toLowerCase() === 'organizer'">
+              <mat-icon>event</mat-icon>
+              <span>Manage Events</span>
             </button>
+
+            <!-- Admin -->
+            <button mat-menu-item (click)="goToManageUsers()" *ngIf="currentUser.role?.toLowerCase() === 'admin'">
+              <mat-icon>supervisor_account</mat-icon>
+              <span>Manage Users</span>
+            </button>
+
             <mat-divider></mat-divider>
+
+            <!-- Logout -->
             <button mat-menu-item (click)="logout()">
               <mat-icon>logout</mat-icon>
               <span>Logout</span>
@@ -58,8 +87,9 @@
       </div>
     </div>
 
+    <!-- Mobile Menu Button -->
     <button mat-icon-button class="mobile-menu-button" (click)="toggleMenu()">
-      <mat-icon>{{isMenuOpen ? 'close' : 'menu'}}</mat-icon>
+      <mat-icon>{{ isMenuOpen ? 'close' : 'menu' }}</mat-icon>
     </button>
   </div>
 </mat-toolbar>

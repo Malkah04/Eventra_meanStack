@@ -7,14 +7,15 @@ export const shareProfile = {
 };
 
 export const updateBasicProfile = {
-  params: Joi.object({ userId: generalFields.id.required() }).required(),
   body: Joi.object({
-    firstName: Joi.string().min(2).max(20),
-    lastName: Joi.string().min(2).max(20),
-    phone: Joi.string().min(8).max(15),
-    gender: Joi.string().valid(...Object.values(genderEnum)),
-  }).min(1).required(),
+    firstName: Joi.string().min(2).max(20).optional().allow(""),
+    lastName: Joi.string().min(2).max(20).optional().allow(""),
+    phone: Joi.string().min(8).max(15).optional().allow(""),
+    gender: Joi.string().valid(...Object.values(genderEnum)).optional().allow(""),
+    bio: Joi.string().max(500).optional().allow(""),
+  }).unknown(true) //  عشان يقبل أي field تاني (زي avatar)
 };
+
 
 export const freezeAccount = {
   params: Joi.object({ userId: generalFields.id.required() }).required(),

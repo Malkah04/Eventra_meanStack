@@ -1,10 +1,19 @@
+// src/app/models/models/user.model.ts
 export interface User {
   _id: string;
   firstName: string;
   lastName: string;
   email: string;
   role: 'user' | 'organizer' | 'admin';
+
+  // optional fields
+  phone?: string | null;
+  avatar?: string | null;
+  gender?: 'male' | 'female' | 'other';
+  bio?: string | null;
   confirmEmailAt?: string | null;
+  freezedAt?: string | null;
+
   createdAt: string;
   updatedAt: string;
   token?: string;
