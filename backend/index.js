@@ -37,12 +37,14 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
 // CORS
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:4200";
-app.use(cors({
-  origin: CLIENT_URL,  // أو "*" للتجربة
-  credentials: true,
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"]
-}));
+app.use(
+  cors({
+    // origin: CLIENT_URL, // أو "*" للتجربة
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
+  })
+);
 app.options("*", cors({ origin: CLIENT_URL }));
 
 // Rate limiting
@@ -54,7 +56,13 @@ app.use(limiter);
 
 // Debug: log Authorization header
 app.use((req, res, next) => {
-  console.log(">> [req]", req.method, req.originalUrl, "- Auth:", req.headers["authorization"]);
+  console.log(
+    ">> [req]",
+    req.method,
+    req.originalUrl,
+    "- Auth:",
+    req.headers["authorization"]
+  );
   if (req.method === "OPTIONS") return res.sendStatus(200);
   next();
 });
@@ -83,4 +91,6 @@ app.use(globalErrorHandling);
 
 // ========== SERVER ==========
 const port = process.env.PORT || 5000;
-app.listen(port, () => console.log(`🚀 Server running on http://localhost:${port}`));
+app.listen(port, () =>
+  console.log(`🚀 Server running on http://localhost:${port}`)
+);

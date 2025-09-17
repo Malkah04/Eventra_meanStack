@@ -70,6 +70,7 @@ import { ReviewComponent } from './components/review/review.component';
 import { PublicProfileComponent } from './components/public-profile/public-profile.component';
 import { ProfileComponent } from './components/profile/profile.component';
 import { UsersListComponent } from './components/users-list/users-list.component';
+import { PaymentComponent } from './components/payment/payment.component';
 
 @NgModule({
   declarations: [
@@ -104,6 +105,7 @@ import { UsersListComponent } from './components/users-list/users-list.component
     PublicProfileComponent,
     ProfileComponent,
     UsersListComponent,
+    PaymentComponent,
   ],
   imports: [
     BrowserModule,

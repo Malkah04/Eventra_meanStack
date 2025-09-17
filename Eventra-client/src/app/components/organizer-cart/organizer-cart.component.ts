@@ -16,6 +16,7 @@ export class OrganizerCartComponent {
   currentUser: User | null = null;
 
   userId: string = '';
+  cartId: string = '';
   constructor(
     private orgCartService: OrganizerCartService,
     private route: ActivatedRoute,
@@ -45,6 +46,7 @@ export class OrganizerCartComponent {
       console.log('Cart API response:', data);
       this.cart = data.item;
       this.totalPrice = data.lastPrice;
+      this.cartId = data.item._id;
 
       this.cart.forEach((c, index) => {
         if (c.venueId) {
