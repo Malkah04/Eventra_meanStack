@@ -1,0 +1,33 @@
+<div *ngIf="loading" class="loading">⏳ Loading profile...</div>
+
+<div *ngIf="!loading && errorMessage" class="error">
+  {{ errorMessage }}
+</div>
+
+<div *ngIf="!loading && user" class="public-profile">
+  <!-- Avatar -->
+  <div class="avatar">
+    <img *ngIf="user.avatar"
+         [src]="getAvatarUrl(user.avatar)"
+         alt="Avatar"
+         width="120"
+         height="120"
+         class="avatar-img">
+    <ng-template [ngIf]="!user.avatar">
+      <div class="placeholder-avatar">👤</div>
+    </ng-template>
+  </div>
+
+  <!-- Basic Info -->
+  <h2 class="username">{{ user.firstName }} {{ user.lastName }}</h2>
+  <p class="email"><strong>📧 Email:</strong> {{ user.email }}</p>
+  <p *ngIf="user.phone"><strong>📱 Phone:</strong> {{ user.phone }}</p>
+  <p *ngIf="user.gender"><strong>⚧ Gender:</strong> {{ user.gender }}</p>
+  <p *ngIf="user.bio"><strong>📝 Bio:</strong> {{ user.bio }}</p>
+
+  <!-- Extra Info -->
+  <div class="extra-info">
+    <p *ngIf="user.createdAt"><strong>📅 Joined:</strong> {{ user.createdAt | date:'mediumDate' }}</p>
+    <p *ngIf="user.updatedAt"><strong>♻️ Last Updated:</strong> {{ user.updatedAt | date:'medium' }}</p>
+  </div>
+</div>

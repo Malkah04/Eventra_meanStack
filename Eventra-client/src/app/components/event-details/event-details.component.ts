@@ -7,7 +7,7 @@ import { AuthService } from 'src/app/services/auth.service';
 @Component({
   selector: 'app-event-details',
   templateUrl: './event-details.component.html',
-  styleUrls: ['./event-details.component.css']
+  styleUrls: ['./event-details.component.css'],
 })
 export class EventDetailsComponent implements OnInit {
   event?: any;
@@ -16,6 +16,10 @@ export class EventDetailsComponent implements OnInit {
   bookings: any[] = [];
   loadingBookings: boolean = false;
   ticketQuantity: number = 1;
+  showComments = false;
+  toggleComment() {
+    this.showComments = !this.showComments;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -24,16 +28,15 @@ export class EventDetailsComponent implements OnInit {
     private authService: AuthService
   ) {}
 
- ngOnInit(): void {
-  const eventId = this.route.snapshot.paramMap.get('id')!;
-  this.loadEvent(eventId);
+  ngOnInit(): void {
+    const eventId = this.route.snapshot.paramMap.get('id')!;
+    this.loadEvent(eventId);
 
-  const currentUser = this.authService.getCurrentUser();
-  console.log('Current user:', currentUser); // للتأكد من البيانات
-  this.isOrganizer = currentUser?.role?.toLowerCase() === 'organizer';
-  this.isAttendee = currentUser?.role?.toLowerCase() === 'user';
-}
-
+    const currentUser = this.authService.getCurrentUser();
+    console.log('Current user:', currentUser); // للتأكد من البيانات
+    this.isOrganizer = currentUser?.role?.toLowerCase() === 'organizer';
+    this.isAttendee = currentUser?.role?.toLowerCase() === 'user';
+  }
 
   loadEvent(eventId: string) {
     this.eventService.getEventById(eventId).subscribe({
@@ -45,7 +48,7 @@ export class EventDetailsComponent implements OnInit {
       },
       error: (err) => {
         console.error('Failed to load event:', err);
-      }
+      },
     });
   }
 
@@ -59,7 +62,7 @@ export class EventDetailsComponent implements OnInit {
       error: (err) => {
         console.error('Failed to load bookings:', err);
         this.loadingBookings = false;
-      }
+      },
     });
   }
 
@@ -72,8 +75,11 @@ export class EventDetailsComponent implements OnInit {
       alert('Please select at least 1 ticket.');
       return;
     }
-    console.log(`Added ${this.ticketQuantity} tickets for event ${this.event?.name || 'unknown'} to cart.`);
+    console.log(
+      `Added ${this.ticketQuantity} tickets for event ${
+        this.event?.name || 'unknown'
+      } to cart.`
+    );
     alert(`${this.ticketQuantity} tickets added to cart!`);
   }
 }
-

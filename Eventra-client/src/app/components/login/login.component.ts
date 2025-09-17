@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
-import { SocialAuthService, GoogleLoginProvider } from '@abacritt/angularx-social-login';
+import { SocialAuthService, GoogleLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
 
 @Component({
   selector: 'app-login',
@@ -51,10 +51,16 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  public redirectToDashboard(): void {
+  redirectToDashboard(): void {
     const user = this.authService.getCurrentUser();
-    if (user?.role?.toLowerCase() === 'admin') this.router.navigate(['/admin/dashboard']);
-    else if (user?.role?.toLowerCase() === 'organizer') this.router.navigate(['/organizer/dashboard']);
+    if (!user) {
+      this.router.navigate([this.returnUrl]);
+      return;
+    }
+
+    const role = user.role?.toLowerCase();
+    if (role === 'admin') this.router.navigate(['/admin/dashboard']);
+    else if (role === 'organizer') this.router.navigate(['/organizer/dashboard']);
     else this.router.navigate([this.returnUrl]);
   }
 
@@ -72,7 +78,7 @@ export class LoginComponent implements OnInit {
     this.errorMessage = '';
 
     this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID)
-      .then(user => {
+      .then((user: SocialUser) => {
         if (user?.idToken) {
           this.authService.loginWithGoogle(user.idToken).subscribe({
             next: () => {

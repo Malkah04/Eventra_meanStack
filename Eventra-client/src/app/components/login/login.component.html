@@ -9,22 +9,25 @@
       <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="auth-form">
+        <!-- Email -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Email</mat-label>
-          <input matInput type="email" formControlName="email" placeholder="Enter your email">
+          <input matInput type="email" formControlName="email" placeholder="Enter your email" aria-label="Email">
           <mat-error *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
             {{ getErrorMessage('email') }}
           </mat-error>
         </mat-form-field>
 
+        <!-- Password -->
         <mat-form-field appearance="outline" class="full-width">
           <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" placeholder="Enter your password">
+          <input matInput type="password" formControlName="password" placeholder="Enter your password" aria-label="Password">
           <mat-error *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
             {{ getErrorMessage('password') }}
           </mat-error>
         </mat-form-field>
 
+        <!-- Submit -->
         <div class="form-actions">
           <button mat-raised-button color="primary" type="submit" class="full-width" [disabled]="!loginForm.valid || isLoading">
             <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
@@ -35,7 +38,12 @@
 
       <div class="divider"><span>or</span></div>
 
-      <app-google-login-button (loginSuccess)="redirectToDashboard()"></app-google-login-button>
+      <!-- Google Login -->
+      <button mat-stroked-button color="primary" class="full-width google-btn" (click)="onGoogleLogin()" [disabled]="isLoading">
+        <mat-icon svgIcon="google"></mat-icon>
+        <span *ngIf="!isLoading">Sign in with Google</span>
+        <mat-spinner diameter="20" *ngIf="isLoading"></mat-spinner>
+      </button>
 
       <div class="auth-links">
         <a routerLink="/forgot-password" class="link">Forgot your password?</a>

@@ -1,45 +1,78 @@
 import { generateHash, compareHash } from "../utils/security/hash.security.js";
 import * as DBService from "../DB/db.service.js";
-import { asyncHandler, successResponse } from "../utils/response.js";
+import { asyncHandler } from "../utils/response.js";
 import { UserModel, roleEnum } from "../DB/models/user.model.js";
 import { generateEncryption, decryptEncryption } from "../utils/security/encryption.security.js";
-import { uploadAvatar } from "../middleware/uploadAvatar.middleware.js";
+import fs from "fs";
 
-// ================= Profile الحالي مع فك التشفير =================
+/**
+ * Helper: mask phone for public profiles
+ */
+function maskPhone(clearPhone) {
+  if (!clearPhone) return null;
+  const str = String(clearPhone);
+  if (str.length <= 3) return "•••";
+  const visible = str.slice(0, 3);
+  const masked = "•".repeat(Math.max(0, str.length - 3));
+  return visible + masked;
+}
+
+// ================= Profile (current user) =================
 export const profile = asyncHandler(async (req, res) => {
   const safeUser = { ...req.user };
   delete safeUser.password;
 
-  // فك تشفير الهاتف لو موجود
   if (safeUser.phone) {
-    safeUser.phone = await decryptEncryption({ cipherText: safeUser.phone });
+    try {
+      safeUser.phone = await decryptEncryption({ cipherText: safeUser.phone });
+    } catch (err) {
+      console.error("Phone decryption error:", err);
+      safeUser.phone = null;
+    }
   }
 
-  return successResponse({ res, data: { user: safeUser } });
+  return res.status(200).json(safeUser);
 });
 
-// ================= Share Profile مع فك التشفير =================
-export const shareProfile = asyncHandler(async (req, res, next) => {
+// ================= Public Profile =================
+export const shareProfile = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   const user = await DBService.findOne({
     model: UserModel,
     filter: { _id: userId },
-    select: "-password -role",
+    select: "-password", // ممكن تخليها "-password -role" لو مش عايزة الـ role
   });
 
-  if (user && user.phone) {
-    user.phone = await decryptEncryption({ cipherText: user.phone });
+  if (!user) return res.status(404).json({ message: "Not registered account" });
+
+  const userObj = user.toObject();
+
+  if (userObj.phone) {
+    try {
+      const decryptedPhone = await decryptEncryption({ cipherText: userObj.phone });
+      userObj.phone = maskPhone(decryptedPhone);
+    } catch (err) {
+      console.error("Phone decryption error (public):", err);
+      userObj.phone = null;
+    }
   }
 
-  return user ? successResponse({ res, data: { user } }) : next(new Error("Not registered account", { cause: 404 }));
+  return res.status(200).json({ success: true, user: userObj });
 });
 
-// ================= Update Profile مع صورة =================
-export const updateBasicProfile = asyncHandler(async (req, res, next) => {
+// ================= Update Profile =================
+export const updateBasicProfile = asyncHandler(async (req, res) => {
   const payload = { ...req.body };
 
-  if (payload.phone) payload.phone = await generateEncryption({ plaintext: payload.phone });
-  if (req.file) payload.avatar = `/uploads/avatars/${req.file.filename}`;
+  // 🔒 Encrypt phone
+  if (payload.phone) {
+    payload.phone = await generateEncryption({ plaintext: payload.phone });
+  }
+
+  // 🖼️ Avatar upload (local)
+  if (req.file) {
+    payload.avatar = `/uploads/avatars/${req.file.filename}`;
+  }
 
   const user = await DBService.findOneAndUpdate({
     model: UserModel,
@@ -48,59 +81,108 @@ export const updateBasicProfile = asyncHandler(async (req, res, next) => {
     select: "-password",
   });
 
-  if (user && user.phone) {
-    user.phone = await decryptEncryption({ cipherText: user.phone });
+  if (!user) return res.status(404).json({ message: "Not registered account" });
+
+  if (user.phone) {
+    try {
+      user.phone = await decryptEncryption({ cipherText: user.phone });
+    } catch {
+      user.phone = null;
+    }
   }
 
-  return user ? successResponse({ res, data: { user } }) : next(new Error("Not registered account", { cause: 404 }));
+  return res.status(200).json(user);
 });
-
-// ================= Freeze / Restore / Hard Delete / Update Password =================
-export const freezeAccount = asyncHandler(async (req, res, next) => {
+// ================= Freeze Account =================
+export const freezeAccount = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  if (userId && req.user.role !== roleEnum.admin) return next(new Error("Regular user cannot freeze other user account", { cause: 403 }));
+  if (userId && req.user.role !== roleEnum.admin)
+    return res.status(403).json({ message: "Regular user cannot freeze other user account" });
+
   const targetId = userId || req.user._id;
   const result = await DBService.updateOne({
     model: UserModel,
     filter: { _id: targetId, freezedAt: { $exists: false } },
     data: { $set: { freezedAt: Date.now(), freezedBy: req.user._id }, $inc: { __v: 1 } },
   });
-  return result.matchedCount
-    ? successResponse({ res, data: { matchedCount: result.matchedCount, modifiedCount: result.modifiedCount } })
-    : next(new Error("Not registered account", { cause: 404 }));
+
+  if (!result.matchedCount) return res.status(404).json({ message: "Not registered account" });
+  return res.status(200).json(result);
 });
 
-export const restoreAccount = asyncHandler(async (req, res, next) => {
+// ================= Restore Account =================
+export const restoreAccount = asyncHandler(async (req, res) => {
   const { userId } = req.params;
-  if (userId && req.user.role !== roleEnum.admin) return next(new Error("Regular user cannot restore other user account", { cause: 403 }));
+  if (userId && req.user.role !== roleEnum.admin)
+    return res.status(403).json({ message: "Regular user cannot restore other user account" });
+
   const targetId = userId || req.user._id;
   const result = await DBService.updateOne({
     model: UserModel,
     filter: { _id: targetId, freezedAt: { $exists: true } },
     data: { $set: { restoredBy: req.user._id }, $unset: { freezedAt: 1, freezedBy: 1 }, $inc: { __v: 1 } },
   });
-  return result.matchedCount
-    ? successResponse({ res, data: { matchedCount: result.matchedCount, modifiedCount: result.modifiedCount } })
-    : next(new Error("Not registered account", { cause: 404 }));
+
+  if (!result.matchedCount) return res.status(404).json({ message: "Not registered account" });
+  return res.status(200).json(result);
 });
 
-export const hardDeleteAccount = asyncHandler(async (req, res, next) => {
+// ================= Hard Delete Account =================
+export const hardDeleteAccount = asyncHandler(async (req, res) => {
   const { userId } = req.params;
   const targetId = userId || req.user._id;
+
   if (req.user.role !== roleEnum.admin && targetId.toString() !== req.user._id.toString())
-    return next(new Error("Regular user cannot hard-delete other user account", { cause: 403 }));
+    return res.status(403).json({ message: "Regular user cannot hard-delete other user account" });
+
   const result = await DBService.deleteOne({ model: UserModel, filter: { _id: targetId } });
-  return result.deletedCount
-    ? successResponse({ res, data: { deletedCount: result.deletedCount } })
-    : next(new Error("Not registered account", { cause: 404 }));
+  if (!result.deletedCount) return res.status(404).json({ message: "Not registered account" });
+
+  return res.status(200).json(result);
 });
 
-export const updatePassword = asyncHandler(async (req, res, next) => {
+// ================= Update Password =================
+export const updatePassword = asyncHandler(async (req, res) => {
   const { oldPassword, newPassword } = req.body;
   const user = await DBService.findById({ model: UserModel, id: req.user._id });
+
+  if (!user) return res.status(404).json({ message: "User not found" });
+
   const match = await compareHash({ plaintext: oldPassword, hashValue: user.password });
-  if (!match) return next(new Error("Old password is incorrect", { cause: 400 }));
+  if (!match) return res.status(400).json({ message: "Old password is incorrect" });
+
   const newHashedPassword = await generateHash({ plaintext: newPassword });
-  await DBService.updateOne({ model: UserModel, filter: { _id: req.user._id }, data: { $set: { password: newHashedPassword }, $inc: { __v: 1 } } });
-  return successResponse({ res, message: "Password updated successfully", data: { userId: user._id, email: user.email } });
+
+  await DBService.updateOne({
+    model: UserModel,
+    filter: { _id: req.user._id },
+    data: { $set: { password: newHashedPassword }, $inc: { __v: 1 } },
+  });
+
+  return res.status(200).json({ message: "Password updated successfully" });
+});
+
+// ================= Get All Users (Admin) =================
+export const getAllUsers = asyncHandler(async (req, res, next) => {
+  try {
+    const users = await UserModel.find({}, "-password");
+    const safeUsers = await Promise.all(
+      users.map(async (u) => {
+        const userObj = u.toObject();
+        if (userObj.phone) {
+          try {
+            userObj.phone = await decryptEncryption({ cipherText: userObj.phone });
+          } catch {
+            userObj.phone = null;
+          }
+        }
+        return userObj;
+      })
+    );
+
+    // ✅ رجع مصفوفة مباشرة
+    return res.status(200).json(safeUsers);
+  } catch (err) {
+    return next(err);
+  }
 });

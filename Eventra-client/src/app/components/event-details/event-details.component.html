@@ -17,7 +17,18 @@
     [(ngModel)]="ticketQuantity"
     min="1"
   />
+   <div class="con">
   <button (click)="addToCart()">Add to Cart</button>
+  
+  <div class="cont">
+    <button class="com" (click)="toggleComment()"> comment </button>
+  </div>
+  </div>
+
+  <div *ngIf="showComments">
+  <app-review [postId]="event._id"  [postType]="'Event'"></app-review>
+</div>
+</div>
 </div>
 
 <!-- عرض حجزات الأورجانيزر -->

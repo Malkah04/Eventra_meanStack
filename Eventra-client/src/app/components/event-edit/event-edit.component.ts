@@ -4,6 +4,14 @@ import { EventService } from '../../services/event.service';
 import { CategoryService } from '../../services/category.service';
 import { VenueService } from '../../services/venue.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { EventService } from 'src/app/services/event.service';
+import { CategoryService } from 'src/app/services/category.service';
+import { VenueService } from 'src/app/services/venue.service';
+
+import { Event } from 'src/app/models/models/event.model';
+import { Category } from 'src/app/models/models/category.model';
+import { Venue } from 'src/app/models/models/venue.model';
+
 
 @Component({
   selector: 'app-event-edit',
@@ -56,6 +64,7 @@ export class EventEditComponent implements OnInit {
     });
   }
 
+
   loadEvent() {
     this.eventService.getEventById(this.eventId).subscribe((res: any) => {
       const event = res.data.event;
@@ -68,11 +77,30 @@ export class EventEditComponent implements OnInit {
         date: event.date,
         time: event.time,
         images: event.images
+
+    // تحميل الفئات والأماكن
+    this.categoryService.getAll().subscribe((cats) => (this.categories = cats));
+    this.venueService
+      .getMyVenues()
+      .subscribe((venues) => (this.venues = venues));
+
+    // تحميل بيانات الحدث
+    this.eventService.getEventById(this.eventId).subscribe((eventData) => {
+      this.eventForm = this.fb.group({
+        name: [eventData.name, Validators.required],
+        description: [eventData.description],
+        categoryId: [eventData.categoryId, Validators.required],
+        venueId: [eventData.venueId, Validators.required],
+        ticketPrice: [eventData.ticketPrice, Validators.required],
+        date: [eventData.date, Validators.required],
+        time: [eventData.time, Validators.required],
+
       });
     });
   }
 
   onSubmit() {
+
     if (this.eventForm.invalid) return;
 
     this.isLoading = true;
@@ -83,5 +111,13 @@ export class EventEditComponent implements OnInit {
       },
       error: () => this.isLoading = false
     });
+
+    if (this.eventForm.valid) {
+      this.eventService
+        .updateEvent(this.eventId, this.eventForm.value)
+        .subscribe(() => {
+          this.router.navigate(['/organizer/events']);
+        });
+    }
   }
 }

@@ -1,5 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { OrganizerCartService } from 'src/app/services/organizer-cart.service';
+import { ActivatedRoute } from '@angular/router';
+import { User } from '../../models/models/user.model';
+import { AuthService } from 'src/app/services/auth.service';
+import { VenueService } from 'src/app/services/venue.service';
 
 @Component({
   selector: 'app-organizer-cart',
@@ -9,31 +13,52 @@ import { OrganizerCartService } from 'src/app/services/organizer-cart.service';
 export class OrganizerCartComponent {
   cart: any[] = [];
   totalPrice = 0;
-  constructor(private orgCartService: OrganizerCartService) {}
+  currentUser: User | null = null;
+
+  userId: string = '';
+  constructor(
+    private orgCartService: OrganizerCartService,
+    private route: ActivatedRoute,
+    private authService: AuthService,
+    private venueService: VenueService
+  ) {}
 
   ngOnInit(): void {
-    this.getOrgCart();
+    const user = this.authService.getCurrentUser();
+    this.currentUser = user;
+    if (this.currentUser) {
+      this.userId = this.currentUser._id;
+      this.getOrgCart();
+    }
   }
   item: any = {};
-  orgId = '68bdd8c16a09216205615ecd';
 
   addToCart() {
-    const item = { ...this.item, organizerId: this.orgId };
+    const item = { ...this.item, organizerId: this.userId };
     this.orgCartService.AddItemToCart(item).subscribe((data) => {
       this.cart = data.cart.item;
       this.totalPrice = data.totalPrice;
     });
   }
   getOrgCart() {
-    this.orgCartService.getCartByOrgId(this.orgId).subscribe((data) => {
+    this.orgCartService.getCartByOrgId(this.userId).subscribe((data) => {
       console.log('Cart API response:', data);
       this.cart = data.item;
       this.totalPrice = data.lastPrice;
+
+      this.cart.forEach((c, index) => {
+        if (c.venueId) {
+          this.venueService.getVenueById(c.venueId).subscribe((venueData) => {
+            this.cart[index].venue = venueData.data.venue;
+            console.log(this.cart[index].venue);
+          });
+        }
+      });
     });
   }
   deleteItem(eventId?: string, venueId?: string) {
     const item = {
-      organizerId: this.orgId,
+      organizerId: this.userId,
       eventId,
       venueId,
     };
@@ -41,16 +66,18 @@ export class OrganizerCartComponent {
     this.orgCartService.deleteItemFromCart(item).subscribe(() => {
       this.cart = this.cart.filter((e) => {
         if (eventId) {
-          return !(e.organizerId === this.orgId && e.eventId === eventId);
+          return !(e.organizerId === this.userId && e.eventId === eventId);
         }
-        return !(e.organizerId === this.orgId && e.venueId === venueId);
+        return !(e.organizerId === this.userId && e.venueId === venueId);
       });
     });
+    this.getOrgCart();
   }
 
   deleteCart() {
-    this.orgCartService.deleteCart(this.orgId).subscribe((data) => {
+    this.orgCartService.deleteCart(this.userId).subscribe((data) => {
       this.cart = [];
     });
   }
+  venues: any = '';
 }
