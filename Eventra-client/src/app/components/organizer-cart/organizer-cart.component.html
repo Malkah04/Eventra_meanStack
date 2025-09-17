@@ -27,3 +27,7 @@
   <p class="total">Total Price: {{ totalPrice }}</p>
   <button (click)="deleteCart()" class="empty-btn">Empty the cart</button>
 </div>
+
+<div>
+  <app-payment [cartId]="cartId" [userId]="userId" [amount]="totalPrice" ></app-payment>
+</div>

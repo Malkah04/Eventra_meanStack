@@ -27,7 +27,7 @@ const checkout = asyncHandler(async (req, res) => {
             name: `event/venue booking -ID`,
             metadata: { userId, cartId },
           },
-          unit_amount: (amount + 20) * 100,
+          unit_amount: Math.round((amount + 20) * 100),
         },
         quantity: 1,
       },
