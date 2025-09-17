@@ -1,31 +1,70 @@
-<h2>Create Event</h2>
 <form [formGroup]="eventForm" (ngSubmit)="onSubmit()">
-  <label>Name:</label>
-  <input formControlName="name" type="text" />
-  
-  <label>Description:</label>
-  <textarea formControlName="description"></textarea>
-  
-  <label>Category:</label>
-  <select formControlName="categoryId">
-    <option value="">-- Select Category --</option>
-    <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
-  </select>
 
-  <label>Venue:</label>
-  <select formControlName="venueId">
-    <option value="">-- Select Venue --</option>
-    <option *ngFor="let venue of venues" [value]="venue._id">{{ venue.name }}</option>
-  </select>
+  <!-- Event Name -->
+  <div class="form-group mb-3">
+    <label for="name">Event Name</label>
+    <input type="text" id="name" class="form-control" formControlName="name" required />
+    <div *ngIf="eventForm.get('name')?.invalid && eventForm.get('name')?.touched" class="text-danger">
+      Name is required
+    </div>
+  </div>
 
-  <label>Ticket Price:</label>
-  <input formControlName="ticketPrice" type="number" />
+  <!-- Description -->
+  <div class="form-group mb-3">
+    <label for="description">Description</label>
+    <textarea id="description" class="form-control" formControlName="description" rows="4"></textarea>
+    <div *ngIf="eventForm.get('description')?.invalid && eventForm.get('description')?.touched" class="text-danger">
+      Description is required
+    </div>
+  </div>
 
-  <label>Date:</label>
-  <input formControlName="date" type="date" />
+  <!-- Category Select -->
+  <div class="form-group mb-3">
+    <label for="categoryId">Category</label>
+    <select id="category-select" class="form-control" [(ngModel)]="selectedCategoryId" name="category" (change)="onCategoryChange()">
+      <option value="" disabled selected>Select Category</option>
+      <option *ngFor="let cat of categories" [value]="cat._id">{{ cat.name }}</option>
+    </select>
+    <div *ngIf="eventForm.get('categoryId')?.invalid && eventForm.get('categoryId')?.touched" class="text-danger">
+      Please select a category
+    </div>
+  </div>
 
-  <label>Time:</label>
-  <input formControlName="time" type="time" />
+  <!-- Venue Select -->
+  <div class="form-group mb-3">
+    <label for="venueId">Venue</label>
+    <select id="venueId" class="form-control" formControlName="venueId" required>
+      <option value="" disabled selected>Select Venue</option>
+      <option *ngFor="let venue of venues" [value]="venue._id">{{ venue.name }}</option>
+    </select>
+    <div *ngIf="eventForm.get('venueId')?.invalid && eventForm.get('venueId')?.touched" class="text-danger">
+      Please select a venue
+    </div>
+  </div>
 
-  <button type="submit" [disabled]="eventForm.invalid">Create Event</button>
+  <!-- Date & Time -->
+  <div class="form-group mb-3">
+    <label for="date">Date</label>
+    <input type="date" id="date" class="form-control" formControlName="date" />
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="time">Time</label>
+    <input type="time" id="time" class="form-control" formControlName="time" />
+  </div>
+
+  <!-- Ticket Price -->
+  <div class="form-group mb-3">
+    <label for="ticketPrice">Ticket Price</label>
+    <input type="number" id="ticketPrice" class="form-control" formControlName="ticketPrice" min="0" />
+  </div>
+
+  <!-- Images -->
+  <div class="form-group mb-3">
+    <label for="images">Event Image URLs (comma separated)</label>
+    <input type="text" id="images" class="form-control" formControlName="images" placeholder="https://example.com/image1.jpg,https://example.com/image2.jpg" />
+  </div>
+
+  <!-- Submit -->
+  <button type="submit" class="btn btn-primary">Create Event</button>
 </form>

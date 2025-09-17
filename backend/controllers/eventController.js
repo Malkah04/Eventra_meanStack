@@ -3,9 +3,8 @@ import Event from "../DB/models/event.js";
 import { roleEnum } from "../DB/models/user.model.js";
 import mongoose from "mongoose";
 
-// =================== Create ====================
+// =================== Create Event ====================
 export const createEvent = asyncHandler(async (req, res, next) => {
-  // نتأكد إنه مش مكرر قبل الإنشاء
   const existing = await Event.findOne({
     name: req.body.name,
     venueId: req.body.venueId,
@@ -13,9 +12,7 @@ export const createEvent = asyncHandler(async (req, res, next) => {
   });
   if (existing) {
     return next(
-      new Error("This event already exists for this venue on this date", {
-        cause: 400,
-      })
+      new Error("This event already exists for this venue on this date", { cause: 400 })
     );
   }
 
@@ -23,24 +20,19 @@ export const createEvent = asyncHandler(async (req, res, next) => {
   return successResponse({ res, status: 201, data: { event } });
 });
 
-// =================== Get All ====================
+// =================== Get All Events ====================
 export const getEvents = asyncHandler(async (req, res) => {
   const { categoryId } = req.query;
-  console.log("categoryId from query:", categoryId);
+  let filter= {};
 
-  let filter = {};
-
-  // ✅ فلترة حسب التصنيف إن وُجد
   if (categoryId && mongoose.Types.ObjectId.isValid(categoryId)) {
     filter.categoryId = new mongoose.Types.ObjectId(categoryId);
   }
 
-  // ✅ فلترة الأحداث حسب نوع المستخدم
+  // Users عادي يشوفوا بس الأحداث المعتمدة
   if (req.user?.role === roleEnum.user) {
     filter.approved = true;
   }
-
-  console.log("Final event filter:", filter);
 
   const events = await Event.find(filter)
     .populate("categoryId", "name")
@@ -50,7 +42,21 @@ export const getEvents = asyncHandler(async (req, res) => {
   return successResponse({ res, data: { events } });
 });
 
-// =================== Get By Id ====================
+// =================== Get Organizer's Own Events ====================
+export const getMyEvents = asyncHandler(async (req, res, next) => {
+  if (req.user.role !== roleEnum.organizer) {
+    return next(new Error("Not authorized", { cause: 403 }));
+  }
+
+  const events = await Event.find({ organizerId: req.user._id })
+    .populate("categoryId", "name")
+    .populate("venueId", "name")
+    .populate("organizerId", "firstName lastName email");
+
+  return successResponse({ res, data: { events } });
+});
+
+// =================== Get Event By Id ====================
 export const getEventById = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id)
     .populate("categoryId", "name")
@@ -60,18 +66,26 @@ export const getEventById = asyncHandler(async (req, res, next) => {
   return successResponse({ res, data: { event } });
 });
 
-// =================== Update ====================
+// Get upcoming events (عام)
+export const getUpcomingEvents = asyncHandler(async (req, res) => {
+  const now = new Date();
+
+  const events = await Event.find({ date: { $gte: now }, approved: true })
+    .populate("categoryId", "name")
+    .populate("venueId", "name")
+    .populate("organizerId", "firstName lastName email")
+    .sort({ date: 1 }); // أحدث الأحداث أولاً
+
+  return successResponse({ res, data: { events } });
+});
+
+// =================== Update Event ====================
 export const updateEvent = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  if (
-    req.user.role === roleEnum.organizer &&
-    event.organizerId.toString() !== req.user._id.toString()
-  ) {
-    return next(
-      new Error("Not authorized to update this event", { cause: 403 })
-    );
+  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
+    return next(new Error("Not authorized to update this event", { cause: 403 }));
   }
 
   Object.assign(event, req.body);
@@ -79,24 +93,20 @@ export const updateEvent = asyncHandler(async (req, res, next) => {
   return successResponse({ res, data: { event } });
 });
 
-// =================== Delete ====================
+// =================== Delete Event ====================
 export const deleteEvent = asyncHandler(async (req, res, next) => {
   const event = await Event.findById(req.params.id);
   if (!event) return next(new Error("Event not found", { cause: 404 }));
 
-  if (
-    req.user.role === roleEnum.organizer &&
-    event.organizerId.toString() !== req.user._id.toString()
-  ) {
-    return next(
-      new Error("Not authorized to delete this event", { cause: 403 })
-    );
+  if (req.user.role === roleEnum.organizer && event.organizerId.toString() !== req.user._id.toString()) {
+    return next(new Error("Not authorized to delete this event", { cause: 403 }));
   }
 
   await event.deleteOne();
   return successResponse({ res, message: "Event deleted successfully" });
 });
 
+// =================== Search Events ====================
 export const search = asyncHandler(async (req, res) => {
   const searchItem = req.params.searchItem;
   const result = await Event.find({
@@ -111,25 +121,28 @@ export const search = asyncHandler(async (req, res) => {
   res.status(200).json({ result });
 });
 
+// =================== Filter Events ====================
 export const filter = asyncHandler(async (req, res) => {
   const { minPrice, maxPrice, time, date } = req.query;
-  let fil = {};
+  let fil= {};
 
   if (minPrice || maxPrice) {
     fil.ticketPrice = {};
     if (minPrice) fil.ticketPrice.$gte = Number(minPrice);
     if (maxPrice) fil.ticketPrice.$lte = Number(maxPrice);
   }
-  console.log("time from query:", req.query.time);
 
-  if (time) {
-    fil.time = time;
-  }
+  if (time) fil.time = time;
   if (date) {
     fil.date = {};
     fil.date.$gte = new Date(date);
   }
-  const result = await Event.find(fil);
+
+  const result = await Event.find(fil)
+    .populate("categoryId", "name")
+    .populate("venueId", "name")
+    .populate("organizerId", "firstName lastName email");
+
   if (!result || result.length === 0) {
     return res.status(404).json({ message: "No events found" });
   }

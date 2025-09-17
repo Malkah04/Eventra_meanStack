@@ -57,7 +57,7 @@ export class DashboardComponent implements OnInit {
 
   loadEvents(categoryId?: string) {
   this.isLoading = true;
-  this.eventService.getEvents(1, 10, categoryId).subscribe({
+  this.eventService.getEvents(1, 100, categoryId).subscribe({
     next: (res: any) => {
       const allEvents: Event[] = res.data.events;
       const today = new Date();

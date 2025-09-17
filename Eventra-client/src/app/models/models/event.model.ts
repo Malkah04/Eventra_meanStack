@@ -1,5 +1,3 @@
-import { Venue } from './venue.model';
-import { Category } from './category.model';
 export interface Event {
   _id: string;
   name: string; 
@@ -34,7 +32,7 @@ export interface Event {
 
 
 export interface CreateEventRequest {
-  title: string;
+  name: string;
   description: string;
   date: string;
   time: string;
