@@ -20,6 +20,7 @@ export class EventEditComponent implements OnInit {
   venues: Venue[] = [];
   isLoading = false;
   eventId!: string;
+  originalImage: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -63,13 +64,17 @@ export class EventEditComponent implements OnInit {
   loadEvent() {
     this.eventService.getEventById(this.eventId).subscribe((res: any) => {
       const event = res.data.event;
+      this.originalImage = event.image[0];
+      this.mainImagePreview = this.originalImage;
+      const formattedDate = event.date ? event.date.split('T')[0] : '';
+
       this.eventForm.patchValue({
         name: event.name,
         description: event.description,
         categoryId: event.categoryId._id,
         venueId: event.venueId._id,
         ticketPrice: event.ticketPrice,
-        date: event.date,
+        date: formattedDate,
         time: event.time,
         images: event.images,
       });
@@ -77,19 +82,50 @@ export class EventEditComponent implements OnInit {
   }
 
   onSubmit() {
-    if (this.eventForm.invalid) return;
+  console.log('🟡 EDIT FORM SUBMIT!');
+  console.log('Form Value:', this.eventForm.value);
 
-    this.isLoading = true;
-    this.eventService
-      .updateEvent(this.eventId, this.eventForm.value)
-      .subscribe({
-        next: () => {
-          this.isLoading = false;
-          this.router.navigate(['/organizer/events']);
-        },
-        error: () => {
-          this.isLoading = false;
-        },
-      });
+  if (this.eventForm.invalid) {
+    alert('❌ Form is invalid!');
+    return;
+  }
+
+  this.isLoading = true;
+
+  const form = { ...this.eventForm.value };
+
+  if (this.mainImagePreview && this.mainImagePreview !== this.originalImage) {
+    form.image = [this.mainImagePreview];
+  } else {
+    form.image = [this.originalImage];
+  }
+
+  this.eventService.updateEvent(this.eventId, form).subscribe({
+    next: () => {
+      alert('✅ Event updated successfully!');
+      this.router.navigate(['/organizer/events']);
+    },
+    error: (err) => {
+      console.error('❌ Error updating event:', err);
+      alert('❌ Failed to update event');
+    },
+    complete: () => {
+      this.isLoading = false;
+    },
+  });
+}
+  
+  mainImagePreview: string | ArrayBuffer | null = "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png";
+
+  onMainImageSelected(event: any) {
+  const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.mainImagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+
+    }
   }
 }

@@ -73,7 +73,10 @@ export class EventCreateComponent implements OnInit {
     }
 
     this.isLoading = true;
-    this.eventService.createEvent(this.eventForm.value).subscribe({
+
+    const form = this.eventForm.value;
+    form.image = [this.mainImagePreview];
+    this.eventService.createEvent(form).subscribe({
       next: () => {
         alert('✅ Event created successfully!');
         this.router.navigate(['/organizer/events']);
@@ -86,5 +89,19 @@ export class EventCreateComponent implements OnInit {
         this.isLoading = false;
       }
     });
+  }
+
+  mainImagePreview: string | ArrayBuffer | null = "https://redthread.uoregon.edu/files/original/affd16fd5264cab9197da4cd1a996f820e601ee4.png";
+
+  onMainImageSelected(event: any) {
+  const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.mainImagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+
+    }
   }
 }

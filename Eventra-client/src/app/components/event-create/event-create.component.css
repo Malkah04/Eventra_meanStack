@@ -1,0 +1,49 @@
+.venue-edit {
+  max-width: 700px;
+  margin: auto;
+  font-family: Arial, sans-serif;
+}
+.venue-edit > h2 {
+  text-align: center;
+  margin: 20px 0;
+}
+.main-image {
+  text-align: center;
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.main-image img,
+.main-image .placeholder {
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); */
+  border: 1px solid #c2b6a2;
+  background-color: #fff;
+}
+
+.main-image .placeholder {
+  background: #f0f0f0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #777;
+  height: 250px;
+}
+
+.upload-btn {
+  margin-top: 10px;
+  display: inline-block;
+  background: #007bff;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s;
+}
+
+.upload-btn:hover {
+  background: #0056b3;
+}

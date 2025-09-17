@@ -8,6 +8,12 @@
   <p><strong>Ticket Price:</strong> {{ event.ticketPrice }} EGP</p>
   <p><strong>Date:</strong> {{ event.date | date: 'fullDate' }}</p>
   <p><strong>Time:</strong> {{ event.time }}</p>
+  <p>
+    <strong>Venue:</strong>
+    <a [routerLink]="['/venues', event.venueId?._id]">
+      {{ event.venueId?.name }}
+    </a>
+  </p>
 
   <!-- عرض أزرار الحجز للمستخدم العادي -->
   <div *ngIf="isAttendee">
