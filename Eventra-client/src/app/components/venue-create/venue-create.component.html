@@ -1,5 +1,5 @@
 <div class="venue-edit">
-    <h2>Edit Venue</h2>
+    <h2>Create New Venue</h2>
 
     <!-- Main Image Preview -->
     <div class="main-image">
@@ -29,21 +29,32 @@
         <!-- Category -->
         <label for="category">Category</label>
         <select [(ngModel)]="venue.categoryId" name="categoryId" required>
-            <option *ngFor="let cat of categories" [value]="cat.id">
+            <option *ngFor="let cat of categories" [value]="cat._id">
                 {{ cat.name }}
             </option>
         </select>
 
         <!-- Location -->
         <div class="form-group">
+        </div>
+
+        <!-- Location -->
+        <div class="form-group">
             <label>Location</label>
             <div class="location-inputs">
-                <input type="number" step="0.0001" placeholder="Latitude (x)" [(ngModel)]="venue.location.x"
-                    name="locationX" />
-                <input type="number" step="0.0001" placeholder="Longitude (y)" [(ngModel)]="venue.location.y"
-                    name="locationY" />
+                <input disabled="true" type="number" step="0.0001" placeholder="Latitude (x)"
+                    [(ngModel)]="venue.location.x" name="locationX" />
+                <input disabled="true" type="number" step="0.0001" placeholder="Longitude (y)"
+                    [(ngModel)]="venue.location.y" name="locationY" />
+            </div>
+
+            <button type="button" (click)="openMap()">Choose location</button>
+            <div *ngIf="mapVisible" class="map-overlay">
+                <div id="map" style="overflow: hidden;"></div>
+                <button type="button" (click)="closeMap()">Submit</button>
             </div>
         </div>
+
 
         <!-- Availability -->
         <div class="form-group">

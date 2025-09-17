@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { VenueService } from '../../services/venue.service';
 import { Router } from '@angular/router';
+import * as L from 'leaflet';
 
 @Component({
   selector: 'app-venue-create',
@@ -29,6 +30,9 @@ export class VenueCreateComponent {
   
   featureInput = '';
   allDays = ['Saturday', 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+
+  map: any;
+  mapVisible = false;
 
   constructor(private venueService: VenueService, private router: Router) {}
 
@@ -92,5 +96,31 @@ export class VenueCreateComponent {
       },
       error: (err) => {console.error(err);alert('Error creating venue');}
     });
+  }
+
+  openMap() {
+    this.mapVisible = true;
+    setTimeout(() => {
+      // if (!this.map) {
+        this.map = L.map('map').setView([30.0444, 31.2357], 6);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(this.map);
+
+        this.map.on('click', (e: any) => {
+          this.venue.location = {
+            x: e.latlng.lat,
+            y: e.latlng.lng
+          };
+          // this.mapVisible = false;
+        });
+      // } else {
+      //   this.map.invalidateSize();
+      // }
+    }, 100);
+  }
+
+  closeMap() {
+    this.mapVisible = false;
   }
 }
